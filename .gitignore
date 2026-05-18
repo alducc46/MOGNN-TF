@@ -1,0 +1,76 @@
+# ============================================
+# Ignora dataset pesanti e file CSV
+# ============================================
+*.csv
+*.tsv
+*.npz
+*.zip
+*.gz
+*.parquet
+*.txt
+*.json
+*.pdf
+# Eccezioni per file di configurazione specifici
+!*\config_test.json
+# Immagini
+# ============================================
+*.png
+*.jpg
+
+
+#ingora file di modelli salvati
+*.pkl
+*.pt
+.pth
+
+
+# Ignora file temporanei di sistema/editor
+.DS_Store
+Thumbs.db
+*.log
+
+# Ignora ambienti virtuali Python
+venv/
+.env/
+__pycache__/
+*.pyc
+
+# Ignora notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignora i file wandb
+*.wandb
+tcga-pancan/multimodal_deprecated/wandb/*
+tcga-pancan/multimodal_deprecated/results*
+
+
+# Ignora configurazioni IDE
+.vscode/
+.idea/
+*vscode*
+run.bat
+
+# Ignora dataset di esempio
+
+# data/
+benchmark/AMOGEL/output/
+benchmark/AMOGEL/mlruns/
+benchmark/AMOGEL/.venv/
+benchmark/MOGONET/BRCA/
+benchmark/MOGONET/ROSMAP/
+benchmark/MPK-GNN/data/processed_data/
+Tests/MLOmics/Main_Dataset/
+Tests/mogonet_test
+Tests/MoGCN
+datasets/data/*
+tcga-pancan/results/*
+tcga-pancan/results-1/*
+tcga-pancan/results-bad/*
+tcga-pancan/cose_varie/*
+tcga-pancan/lib/*
+notes/*
+tcga-pancan/old_multimodal/wandb/*
+tcga-pancan/temp_wandb/*
+src/*
+datasets/get_raw_data_new.py
+tcga-pancan/main_preprocessing_phase4.py

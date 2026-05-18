@@ -1,0 +1,6 @@
+grid:
+  data.num_gene: [500, 700, 1000]
+  data.batch_size: [16, 32, 64]
+fixed_overrides:
+  project.seed: 42
+name: my_grid
