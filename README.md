@@ -79,9 +79,9 @@ pip install --no-cache-dir --only-binary=:all: \
   pyg_lib torch-geometric torch-scatter torch-sparse torch-cluster torch-spline-conv \
   termcolor torcheval \
   -f https://data.pyg.org/whl/torch-2.7.1+cu128.html
+```
 
-
-## Reproducing the thesis results
+## Reproducing the ablation results
 
 End-to-end reproduction in five commands:
 
@@ -105,12 +105,12 @@ The individual steps are detailed in [scripts/README.md](scripts/README.md).
   administrator). Requires [Chocolatey](https://chocolatey.org/install)
   installed first.
 - **Scoop**: `scoop install make`.
-- **Winget**: `winget install GnuWin32.Make` (then add
+<!-- - **Winget**: `winget install GnuWin32.Make` (then add
   `C:\Program Files (x86)\GnuWin32\bin` to `PATH`).
 - **MSYS2 / Git Bash**: `pacman -S make` from an MSYS2 shell. Git for
   Windows ships a `bash` that can run the Makefile if `make` is on `PATH`.
 - **WSL**: `wsl --install`, then `sudo apt install make` inside the Ubuntu
-  shell and run the commands from there.
+  shell and run the commands from there. -->
 
 If you prefer not to install `make`, every target maps 1:1 to a Python
 command — see [scripts/README.md](scripts/README.md) and run them
