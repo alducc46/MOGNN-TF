@@ -70,6 +70,17 @@ pip install -e .
 > `torch_sparse`, etc., install them separately from the PyG wheel index
 > after installing torch (see the [PyG installation guide](https://pytorch-geometric.readthedocs.io/en/2.4.0/install/installation.html)).
 
+
+If `torch-sparse` installation fails (common on some platforms), install PyTorch and PyG extensions separately:
+
+```bash
+pip install --index-url https://download.pytorch.org/whl/cu128 torch torchvision torchaudio
+pip install --no-cache-dir --only-binary=:all: \
+  pyg_lib torch-geometric torch-scatter torch-sparse torch-cluster torch-spline-conv \
+  termcolor torcheval \
+  -f https://data.pyg.org/whl/torch-2.7.1+cu128.html
+
+
 ## Reproducing the thesis results
 
 End-to-end reproduction in five commands:
@@ -85,6 +96,26 @@ make analysis    # aggregate metrics, Friedman + Wilcoxon-Holm tests
 `make all` runs `data → train → analysis` sequentially.
 
 The individual steps are detailed in [scripts/README.md](scripts/README.md).
+
+### Installing `make` on Windows
+
+`make` is not available out-of-the-box on Windows. Pick one of:
+
+- **Chocolatey** (recommended): `choco install make` (run PowerShell as
+  administrator). Requires [Chocolatey](https://chocolatey.org/install)
+  installed first.
+- **Scoop**: `scoop install make`.
+- **Winget**: `winget install GnuWin32.Make` (then add
+  `C:\Program Files (x86)\GnuWin32\bin` to `PATH`).
+- **MSYS2 / Git Bash**: `pacman -S make` from an MSYS2 shell. Git for
+  Windows ships a `bash` that can run the Makefile if `make` is on `PATH`.
+- **WSL**: `wsl --install`, then `sudo apt install make` inside the Ubuntu
+  shell and run the commands from there.
+
+If you prefer not to install `make`, every target maps 1:1 to a Python
+command — see [scripts/README.md](scripts/README.md) and run them
+directly, e.g. `python scripts/train.py --config configs/config.yml`
+instead of `make train`.
 
 ## Data sources
 
@@ -123,12 +154,11 @@ Default configuration in [configs/config.yml](configs/config.yml). Key fields:
 - `sampler_strategy = weighted`, `sampler_gamma = 0.98`
 - `train.num_epochs = 100`, early stopping on val macro-F1
 
-The thesis Tables can be re-generated via the sweep configs in `configs/`.
+The ablation results can be re-generated via the sweep configs in `configs/`.
 
-## Citation
+<!-- ## Citation
 
-If you use this code, please cite the thesis (and the eventual Bioinformatics
-paper, once available).
+If you use this code, please cite the ... -->
 
 ## License
 
