@@ -1,0 +1,32 @@
+name: mognn-tf
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - numpy
+  - pandas
+  - scikit-learn
+  - scipy
+  - matplotlib
+  - seaborn
+  - networkx
+  - fastparquet
+  - pyarrow
+  - psutil
+  - pip:
+      - torch==2.1.1
+      - torch_geometric==2.4.0
+      - pytorch-lightning==2.1.1
+      - optuna
+      - wandb
+      - mlflow
+      - python-dotenv
+      - pynvml
+      - gdown
+      - mygene
+      - requests
+      - pyyaml
+      - openpyxl
+      - -e .
