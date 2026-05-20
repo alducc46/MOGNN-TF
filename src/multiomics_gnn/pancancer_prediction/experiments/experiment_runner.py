@@ -205,21 +205,37 @@ class ExperimentRunner():
         val_idx_f   = seed_dir / "common_trimmed_shuffle_index_val.tsv"
         test_idx_f  = seed_dir / "common_trimmed_shuffle_index_test.tsv"
 
-        if not (train_idx_f.exists() and val_idx_f.exists() and test_idx_f.exists()):
-            self.logger.info("Split files not found. Generating fixed stratified split (seed=42).")
+        train_fraction = float(self.config['tuning'].get('train_fraction', 1.0))
+        fraction_pct = int(round(train_fraction * 100))
+        fraction_idx_f = seed_dir / f"common_trimmed_shuffle_index_train_fraction_{fraction_pct}.tsv"
+
+        # Regenerate splits if (a) the base files are missing, or
+        # (b) we need a train-fraction file that has not been produced yet.
+        # NB: `generate_stratified_shuffle_indices` writes both the base
+        # files AND, when train_fraction < 1.0, the fraction-specific file.
+        need_base = not (train_idx_f.exists() and val_idx_f.exists() and test_idx_f.exists())
+        need_fraction = train_fraction < 1.0 and not fraction_idx_f.exists()
+        if need_base or need_fraction:
+            if need_base:
+                self.logger.info("Split files not found. Generating fixed stratified split.")
+            else:
+                self.logger.info(
+                    f"Train-fraction split for {fraction_pct}% not found. "
+                    "Generating it (base splits already exist)."
+                )
             generate_stratified_shuffle_indices(
                 labels_csv=str(paths.clinical_path),
                 out_dir=str(seed_dir),
-                train_fraction=self.config['tuning'].get('train_fraction', 1.0),
-                random_state=self.config['project']['split_seed'],  # fisso per ripetibilità
-                logger=self.logger
-                # eventuali argomenti: label_column, test_size, val_size, ecc.
+                train_fraction=train_fraction,
+                random_state=self.config['project']['split_seed'],
+                logger=self.logger,
             )
-        if cfg["tuning"]["train_fraction"] < 1.0:
-            # train_idx_f is the path keep in mind
-            self.logger.info(f"Using reduced train fraction: {cfg['tuning']['train_fraction']}. Loading train indices from {train_idx_f} and applying train fraction reduction.")
-            # use train fraction idx
-            train_idx_f = seed_dir / f"common_trimmed_shuffle_index_train_fraction_{int(cfg['tuning']['train_fraction']*100)}.tsv"
+        if train_fraction < 1.0:
+            self.logger.info(
+                f"Using reduced train fraction: {train_fraction}. "
+                f"Loading from {fraction_idx_f}."
+            )
+            train_idx_f = fraction_idx_f
         print(f"train path: {train_idx_f}, val path: {val_idx_f}, test path: {test_idx_f}")
         # Load and preprocess data
         train_idx = np.loadtxt(train_idx_f, dtype=int, delimiter="\t")
