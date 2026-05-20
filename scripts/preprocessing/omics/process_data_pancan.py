@@ -308,17 +308,19 @@ def main():
     Main function to process TCGA BRCA data.
     """
      # Parse command line arguments
-    parser = argparse.ArgumentParser(description='Process TCGA BRCA data with optional normalization and variance calculation')
-    parser.add_argument('--normalization', action='store_true', 
+    parser = argparse.ArgumentParser(description='Process TCGA pan-cancer data with optional normalization and variance calculation')
+    parser.add_argument('--normalization', action='store_true',
                        help='Apply z-score normalization to omics data')
     parser.add_argument('--variance_calc', action='store_true',
                        help='Calculate variance for gene expression data')
+    parser.add_argument('--input-dir', default='data/raw/tcga_pancan/processed',
+                       help='Directory containing the parquet files produced by prepare_pancan.py')
     parser.add_argument('--output-dir', default='data/omics',
                        help='Output directory for processed files')
-    
+
     args = parser.parse_args()
 
-    root_path = "data/pancan_tcga/processed"
+    root_path = args.input_dir
     # File paths
     clinical_file = f"{root_path}/clinical.parquet"
     #mirna_file = "data/raw/TCGA-BRCA/processed/TCGA-BRCA.miRNA.csv"

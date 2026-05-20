@@ -40,8 +40,12 @@ data-download:
 	    --src data/raw/tcga_pancan \
 	    --out data/raw/tcga_pancan/processed
 
+# Note: no --normalization here. The wrapper / training pipeline performs
+# min-max scaling on the training fold only (to avoid data leakage), so
+# applying it pan-cohort upstream is redundant and produces files with a
+# "_normalized" suffix that data-wrap does not expect.
 data-omics:
-	$(PY) scripts/preprocessing/omics/process_data_pancan.py --normalization
+	$(PY) scripts/preprocessing/omics/process_data_pancan.py
 
 data-priors:
 	$(PY) scripts/preprocessing/priors/get_raw_data.py

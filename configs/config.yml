@@ -4,7 +4,7 @@ project:
   experiment_name: "pancan_gnn_experiment_001"
   device: "cuda"   # Opzioni: "cuda" o "cpu"
 paths:
-  training_data_dir: "./traning_data"
+  training_data_dir: "./data/training"
   results_dir: "./results/pancan"
   models_dir: "./models/pancan"
   logs_dir: "./logs/pancan"
@@ -44,7 +44,8 @@ data:
   tf_tf: False
   tf_mirna: False
   num_tf: 0
-  feature_selection_method: variance   # Opzioni: "fvalue", "fvalue_per_class", null
+  feature_selection_method: variance   # Opzioni: "variance", "GSP", "community", null
+  normalization: min-max               # Opzioni: "min-max", "mad", "z-score". Fit solo su training set.
 model:
   name: "gat_tf"             # Opzioni supportate: "gat", "gatv2", "gcn", "baseline"
   parallel: true         # Se true, aggiunge un ramo fully connected parallelo (vedi gat.py)

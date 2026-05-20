@@ -39,5 +39,7 @@ print(f"Number of NM_ ids not found: {len(not_found)}")
 # %%
 # esportazione mappature trovate
 found = res_df[res_df["symbol"].notna()]
-found.to_csv("refseq2gene_mappings.tsv", sep="\t", index=False)
+import os
+os.makedirs("data/prior_knowledge", exist_ok=True)
+found.to_csv("data/prior_knowledge/refseq2gene_mappings.tsv", sep="\t", index=False)
 # %%

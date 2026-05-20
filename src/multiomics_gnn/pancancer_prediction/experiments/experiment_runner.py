@@ -300,26 +300,25 @@ class ExperimentRunner():
                 )
 
         
-        # ====================== Normalizzazione min-max per tutti i dati (gene expression, CNV, miRNA) nel training set ed applicazione nel test set
-        # use scikit-learn MinMaxScaler
-        if self.config['data'].get('normalization', None) == 'min-max':
-            from sklearn.preprocessing import MinMaxScaler
-            scaler_exp = MinMaxScaler()
-            scaler_cnv = MinMaxScaler()
-            if mirna_data is not None:
-                scaler_mirna = MinMaxScaler()
-        elif self.config['data'].get('normalization', None) == 'mad':
-            from sklearn.preprocessing import RobustScaler
-            scaler_exp = RobustScaler()
-            scaler_cnv = RobustScaler()
-            if mirna_data is not None:
-                scaler_mirna = RobustScaler()
-        elif self.config['data'].get('normalization', None) == 'z-score':
-            from sklearn.preprocessing import StandardScaler
-            scaler_exp = StandardScaler()
-            scaler_cnv = StandardScaler()
-            if mirna_data is not None:
-                scaler_mirna = StandardScaler()
+        # ====================== Normalizzazione per tutti i dati (gene expression, CNV, miRNA):
+        # fit solo sul training set, applicata anche a validation/test (no leakage).
+        # Default = min-max, come riportato nella tesi.
+        normalization = self.config['data'].get('normalization', 'min-max')
+        if normalization == 'min-max':
+            from sklearn.preprocessing import MinMaxScaler as _Scaler
+        elif normalization == 'mad':
+            from sklearn.preprocessing import RobustScaler as _Scaler
+        elif normalization == 'z-score':
+            from sklearn.preprocessing import StandardScaler as _Scaler
+        else:
+            raise ValueError(
+                f"Unsupported data.normalization='{normalization}'. "
+                "Use one of: 'min-max', 'mad', 'z-score'."
+            )
+        scaler_exp = _Scaler()
+        scaler_cnv = _Scaler()
+        if mirna_data is not None:
+            scaler_mirna = _Scaler()
 
         scaler_exp.fit(exp_data.iloc[train_idx]) # fit solo sui dati di train
         #exp_data_scaled = scaler_exp.transform(exp_data[exp_data.columns]) # applica la trasformazione a tutto il dataset

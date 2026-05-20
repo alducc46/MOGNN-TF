@@ -86,15 +86,17 @@ def filter_data_with_mirna(mirna_df, mirna_list):
     return filtered_mirna, ordered_common_mirnas
 
 print("Working directory:", os.getcwd())
+# All paths are relative to the repository root (the cwd from which the
+# pipeline is invoked via the Makefile).
 data_paths = {
     "clinical_file": "data/omics/clinical.zip",
     "cnv_file": "data/omics/cnv.zip",
     "mirna_file": "data/omics/mirna.zip",
     "fpkm_file": "data/omics/fpkm.zip",
-    "adj_file": "../datasets/data/prior_knowledge/GGI/GGI_adjacency_sparse.npz",
-    "node_list": "../datasets/data/prior_knowledge/GGI/GGI_nodes_list.csv",
-    "gene_mirna_adj_file": "../datasets/data/prior_knowledge/miRNA/gene_miRNA_adjacency_sparse.npz",
-    "mirna_node_list": "../datasets/data/prior_knowledge/miRNA/miRNA_nodes_list.csv"
+    "adj_file": "data/prior_knowledge/GGI/GGI_adjacency_sparse.npz",
+    "node_list": "data/prior_knowledge/GGI/GGI_nodes_list.csv",
+    "gene_mirna_adj_file": "data/prior_knowledge/miRNA/gene_miRNA_adjacency_sparse.npz",
+    "mirna_node_list": "data/prior_knowledge/miRNA/miRNA_nodes_list.csv",
 }
 
 def build_dtype(data_file):
@@ -133,7 +135,7 @@ def min_max_normalize(df):
     return normalized_df
 
 
-makedir_path = "traning_data"
+makedir_path = "data/training"
 os.makedirs(makedir_path, exist_ok=True)
 #%%
 # loading all data and filtering by common genes between cnv, expression and biogrid
@@ -445,7 +447,7 @@ assert filtered_mirnas == top_100_mirnas, \
 # %%
 # ---------------------- GENE-GENE ADJACENCY MATRIX FILTERING -----------------------
 # al posto delle matrici di adiacenza carico i file di interazione, filtro e costruisco le matrici di adiacenza
-interactions_df = pd.read_csv("../datasets/data/prior_knowledge/GGI/GGI_edges_undirected.csv")
+interactions_df = pd.read_csv("data/prior_knowledge/GGI/GGI_edges_undirected.csv")
 print("Interactions data loaded with shape:", interactions_df.shape)
 # da questo dataframe filtra le interazioni per tenere solo quelle tra geni presenti in filtered_biogrid_genes
 filtered_interactions = interactions_df[(interactions_df['u'].isin(filtered_biogrid_genes)) & (interactions_df['v'].isin(filtered_biogrid_genes))]
@@ -466,7 +468,7 @@ print(f"Number of filtered biogrid genes: {len(filtered_biogrid_genes)}")
 import scipy.sparse as sp
 print("Building gene-gene adjacency matrix...")
 # load interactions
-interactions_df = pd.read_csv("../datasets/data/prior_knowledge/GGI/GGI_edges_undirected.csv")
+interactions_df = pd.read_csv("data/prior_knowledge/GGI/GGI_edges_undirected.csv")
 print("Interactions data loaded with shape:", interactions_df.shape)
 
 
@@ -514,7 +516,7 @@ sp.save_npz(os.path.join(makedir_path, "adj_matrix_biogrid.npz"), adj_matrix)
 # ----------------------- TF-GENE ADJACENCY MATRIX AND NODE LIST -----------------------
 print("Building TF-gene adjacency matrix...")
 # load tf-gene interactions
-tf_gene_interactions_path = "../datasets/data/prior_knowledge/TF/TF_interactions.tsv"
+tf_gene_interactions_path = "data/prior_knowledge/TF/TF_interactions.tsv"
 tf_gene_df = pd.read_csv(tf_gene_interactions_path, sep="\t")
 print("TF-gene interactions loaded with shape:", tf_gene_df.shape)
 filtered_genes = [str(g).strip() for g in filtered_biogrid_genes]
@@ -604,7 +606,7 @@ print("Saved gene nodes list for TF-gene matrix:", os.path.join(makedir_path, "g
 # gene-mirna adjacency matrix with only top 100 mirna by variance
 print("Building gene-miRNA adjacency matrix...")
 # ------------------ LOAD NODE LISTS ------------------
-mirna_gene_interactions_path = "../datasets/data/prior_knowledge/miRNA/miRNA_gene_interactions.csv"
+mirna_gene_interactions_path = "data/prior_knowledge/miRNA/miRNA_gene_interactions.csv"
 filtered_genes = [str(g).strip() for g in filtered_biogrid_genes]
 filtered_mirnas = list(mirna_data_top_100.columns) # oppure la tua lista filtrata finale
 #%%

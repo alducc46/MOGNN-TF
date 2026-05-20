@@ -10,12 +10,17 @@ import os
 import numpy as np
 from scipy.sparse import coo_matrix, save_npz, load_npz, eye
 
+# All output paths are relative to the repository root (the cwd when invoked
+# via the Makefile / scripts/README.md). The HGNC conversion table ships with
+# this script folder, so we resolve it relative to __file__.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+
 GGI_Interaction = "data/prior_knowledge/GGI/GGI.zip"
 mirna_target_file = "data/prior_knowledge/miRNA/miRDB.gz"
-conversion_table_gene = "hgcn_mart_conversion_table.zip"
+conversion_table_gene = os.path.join(_HERE, "hgcn_mart_conversion_table.zip")
 outputfolder_ggi = "data/prior_knowledge/GGI/"
 outputfolder_mirna = "data/prior_knowledge/miRNA/"
-refseq2gene_file = "refseq2gene_mappings.tsv"
+refseq2gene_file = "data/prior_knowledge/refseq2gene_mappings.tsv"
 
 
 def load_ggi_interactions(GGI_Interaction, outputfolder_ggi, conversion_table_gene):
@@ -451,23 +456,27 @@ if __name__ == "__main__":
     if os.path.exists(os.path.join(outputfolder_mirna, "miRNA_nodes_list.csv")):
         print("miRNA data already exists, skipping loading.")
     else:
-        # miRNA–gene
+        # miRNA–gene interactions
         ok_mirna = load_mirna_gene_interactions(
             mirna_target_file=mirna_target_file,
             refseq2gene_file=refseq2gene_file,
             conversion_table_gene=conversion_table_gene,
-        outputfolder_mirna=outputfolder_mirna,
+            outputfolder_mirna=outputfolder_mirna,
         )
+        # miRNA–miRNA metapath: this step ALSO writes miRNA_nodes_list.csv,
+        # which is required by compute_gene_mirna_adjacency below, so it must
+        # come first.
+        if ok_mirna:
+            compute_mirna_metapath(outputfolder_mirna)
+        # gene–miRNA adjacency (depends on both GGI_nodes_list.csv and
+        # miRNA_nodes_list.csv generated above).
         compute_gene_mirna_adjacency(
             outputfolder_mirna=outputfolder_mirna,
             gene_nodes_file=os.path.join(outputfolder_ggi, "GGI_nodes_list.csv"),
             mirna_nodes_file=os.path.join(outputfolder_mirna, "miRNA_nodes_list.csv"),
             adjacency_filename="gene_miRNA_adjacency_sparse.npz",
-            filter_by_variance=False
+            filter_by_variance=False,
         )
-        # miRNA–miRNA
-        if ok_mirna:
-            compute_mirna_metapath(outputfolder_mirna)
     if os.path.exists(os.path.join("data/prior_knowledge/TF", "TF_interactions.tsv")):
         print("TF data already exists, skipping loading.")
     else:
