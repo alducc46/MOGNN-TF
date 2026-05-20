@@ -1,0 +1,6 @@
+# Smoke test: 2 sampler strategies × 1 seed × 10 epochs.
+experiments:
+- name: smoke_random
+  overrides: { sampler_strategy: random, project: { seed: 2025 }, train: { num_epochs: 10 } }
+- name: smoke_gamma_098
+  overrides: { sampler_strategy: weighted, sampler_gamma: 0.98, project: { seed: 2025 }, train: { num_epochs: 10 } }

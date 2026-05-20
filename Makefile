@@ -13,18 +13,33 @@
 PY ?= python
 
 .PHONY: help install data data-download data-omics data-priors data-wrap \
-        train ablation optuna analysis all clean
+        train train-final \
+        optuna optuna-smoke \
+        ablation ablation-baseline ablation-genes ablation-sampler ablation-tf ablation-split-ratio \
+        ablation-smoke ablation-baseline-smoke ablation-genes-smoke ablation-sampler-smoke \
+        ablation-tf-smoke ablation-split-ratio-smoke \
+        analysis all clean
 
 help:
 	@echo "Targets:"
-	@echo "  install   - pip install -e ."
-	@echo "  data      - run full preprocessing pipeline"
-	@echo "  train     - single MOGNN-TF run with default config"
-	@echo "  ablation  - sweep experiments (genes, sampler, TF, split ratio)"
-	@echo "  optuna    - hyperparameter search"
-	@echo "  analysis  - aggregate metrics + Friedman/Wilcoxon-Holm tests"
-	@echo "  all       - data + train + analysis"
-	@echo "  clean     - remove __pycache__ and stale logs"
+	@echo "  install                    - pip install -e ."
+	@echo "  data                       - run full preprocessing pipeline"
+	@echo ""
+	@echo "  train                      - single run, starting baseline (configs/config.yml)"
+	@echo "  train-final                - single run, paper final config (configs/config_final.yml)"
+	@echo ""
+	@echo "  optuna-smoke               - Optuna quick check (3 trials, 30 min)"
+	@echo "  optuna                     - Optuna full study (35 trials, 10h, as in paper)"
+	@echo ""
+	@echo "  ablation-<name>            - reproduce paper Table <name> (full)"
+	@echo "  ablation-<name>-smoke      - quick smoke version of the same ablation"
+	@echo "  <name> in: baseline, genes, sampler, tf, split-ratio"
+	@echo "  ablation                   - all 5 ablations (hundreds of runs!)"
+	@echo "  ablation-smoke             - all 5 smoke ablations (~15 runs)"
+	@echo ""
+	@echo "  analysis                   - aggregate metrics + Friedman/Wilcoxon-Holm tests"
+	@echo "  all                        - data + train-final + analysis"
+	@echo "  clean                      - remove __pycache__ and stale logs"
 
 install:
 	$(PY) -m pip install -e .
@@ -56,22 +71,78 @@ data-wrap:
 	$(PY) scripts/preprocessing/omics/data_wrapper.py
 
 # --------------------------------------------------------------------
-# Training & evaluation
+# Single-run training
 # --------------------------------------------------------------------
+# `train`       : starting baseline (configs/config.yml, Laterza's pre-Optuna setup)
+# `train-final` : paper final configuration (configs/config_final.yml, trial 18 + TF)
 train:
 	$(PY) scripts/train.py --config configs/config.yml
 
-ablation:
-	$(PY) scripts/run_sweep.py --sweep configs/sweep_config.yml
+train-final:
+	$(PY) scripts/train.py --config configs/config_final.yml
+
+# --------------------------------------------------------------------
+# Hyperparameter search (Optuna)
+# --------------------------------------------------------------------
+# Pipeline order:  optuna  →  update config_final.yml with best params  →  ablation
+optuna-smoke:
+	$(PY) scripts/run_optuna.py --config configs/config.yml \
+	    --n-trials 3 --timeout-hours 0.5 --study-name optuna_smoke
 
 optuna:
-	$(PY) scripts/run_optuna.py
+	$(PY) scripts/run_optuna.py --config configs/config.yml \
+	    --n-trials 35 --timeout-hours 10 --study-name pancan_optuna_full
 
+# --------------------------------------------------------------------
+# Ablation studies (one target per paper table)
+# --------------------------------------------------------------------
+# Each *-smoke target uses 1-2 seeds and 10 epochs for a quick end-to-end
+# sanity check. The non-smoke targets reproduce the full table reported in
+# the paper (tens to hundreds of runs each). All use config_final.yml as
+# the base configuration.
+
+ablation-baseline:
+	$(PY) scripts/run_sweep.py --config configs/config_final.yml --sweep configs/sweep_baseline.yml
+
+ablation-baseline-smoke:
+	$(PY) scripts/run_sweep.py --config configs/config_final.yml --sweep configs/sweep_baseline_smoke.yml
+
+ablation-genes:
+	$(PY) scripts/run_sweep.py --config configs/config_final.yml --sweep configs/sweep_genes.yml
+
+ablation-genes-smoke:
+	$(PY) scripts/run_sweep.py --config configs/config_final.yml --sweep configs/sweep_genes_smoke.yml
+
+ablation-sampler:
+	$(PY) scripts/run_sweep.py --config configs/config_final.yml --sweep configs/sweep_sampler.yml
+
+ablation-sampler-smoke:
+	$(PY) scripts/run_sweep.py --config configs/config_final.yml --sweep configs/sweep_sampler_smoke.yml
+
+ablation-tf:
+	$(PY) scripts/run_sweep.py --config configs/config_final.yml --sweep configs/sweep_tf.yml
+
+ablation-tf-smoke:
+	$(PY) scripts/run_sweep.py --config configs/config_final.yml --sweep configs/sweep_tf_smoke.yml
+
+ablation-split-ratio:
+	$(PY) scripts/run_sweep.py --config configs/config_final.yml --sweep configs/sweep_split_ratio.yml
+
+ablation-split-ratio-smoke:
+	$(PY) scripts/run_sweep.py --config configs/config_final.yml --sweep configs/sweep_split_ratio_smoke.yml
+
+# Aggregate aliases
+ablation: ablation-baseline ablation-genes ablation-sampler ablation-tf ablation-split-ratio
+ablation-smoke: ablation-baseline-smoke ablation-genes-smoke ablation-sampler-smoke ablation-tf-smoke ablation-split-ratio-smoke
+
+# --------------------------------------------------------------------
+# Analysis & aggregation
+# --------------------------------------------------------------------
 analysis:
 	$(PY) scripts/collect_results.py --results-root results/pancan
 	$(PY) scripts/analysis/analize_metrics.py
 
-all: data train analysis
+all: data train-final analysis
 
 # --------------------------------------------------------------------
 # Housekeeping

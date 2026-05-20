@@ -171,5 +171,28 @@ def run_study(
     return study
 
 
+def _cli():
+    import argparse
+    ap = argparse.ArgumentParser(description="Optuna hyperparameter search for MOGNN-TF")
+    ap.add_argument("--config", default="configs/config.yml",
+                    help="Base config to start from (Optuna overrides a subset of fields)")
+    ap.add_argument("--n-trials", type=int, default=35,
+                    help="Number of Optuna trials (paper used 35)")
+    ap.add_argument("--timeout-hours", type=float, default=10.0,
+                    help="Hard timeout in hours (paper used 10)")
+    ap.add_argument("--fixed-seed", type=int, default=42)
+    ap.add_argument("--study-name", default="pancan_optuna_simple")
+    ap.add_argument("--out-dir", default="./results/pancan/optuna")
+    args = ap.parse_args()
+    run_study(
+        config_path=args.config,
+        n_trials=args.n_trials,
+        timeout_hours=args.timeout_hours,
+        fixed_seed=args.fixed_seed,
+        study_name=args.study_name,
+        out_dir=args.out_dir,
+    )
+
+
 if __name__ == "__main__":
-    run_study()
+    _cli()

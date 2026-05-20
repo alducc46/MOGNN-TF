@@ -57,10 +57,14 @@ def expand_grid(grid: dict):
 def main():
     
     ap = argparse.ArgumentParser()
-    ap.add_argument("--sweep", required=True)
+    ap.add_argument("--sweep", required=True,
+                    help="Path to a sweep YAML (with 'experiments:' and/or 'grid:' top-level keys)")
+    ap.add_argument("--config", default="configs/config_final.yml",
+                    help="Base config to apply the sweep overrides on top of "
+                         "(default: configs/config_final.yml = thesis final setup)")
     args = ap.parse_args()
 
-    base_config_path = os.path.join("src", "multiomics_gnn", "config", "config.yml")
+    base_config_path = args.config
     print(f"Loading base config from: {base_config_path}")
     base_config = load_config(base_config_path)
 
