@@ -13,10 +13,9 @@ the 27-class iCluster molecular subtype taxonomy of Hoadley et al. (2018).
 ```
 .
 ├── configs/                       # YAML configuration files
-│   ├── config.yml                 # default MOGNN-TF setup (GCN, 700 genes, 200 TF, γ=0.98)
-│   ├── sweep_config.yml           # ablation sweeps
-│   ├── sweep_config_grid.yml
-│   └── sweep_decoder.yml
+│   ├── config.yml                 # starting baseline (pre-Optuna)
+│   ├── config_final.yml           # paper final config (Optuna trial 18 + TF)
+│   └── sweep_*.yml                # 5 ablations × (full / smoke) = 10 files
 ├── src/multiomics_gnn/            # importable Python package
 │   ├── base_ml/                   # Trainer, EarlyStopper, Scheduler, Sampler
 │   ├── config/                    # YAML loader
@@ -81,21 +80,42 @@ pip install --no-cache-dir --only-binary=:all: \
   -f https://data.pyg.org/whl/torch-2.7.1+cu128.html
 ```
 
-## Reproducing the ablation results
+## Reproducing the paper
 
-End-to-end reproduction in five commands:
+The paper protocol is **Optuna → ablations → analysis**. Two equivalent
+workflows are exposed: a *smoke* path (~30 min, sanity-check that the
+whole pipeline runs), and a *full* path (matches the paper, hundreds of
+GPU-hours).
 
 ```bash
-make install     # editable install
-make data        # download TCGA + BioGRID + miRDB + TFLink, build all matrices
-make train       # single run with the final MOGNN-TF (GCN) configuration
-make ablation    # gene count / sampler / TF / split-ratio ablations
-make analysis    # aggregate metrics, Friedman + Wilcoxon-Holm tests
+make install                 # editable install
+make data                    # one-off: TCGA + BioGRID + miRDB + TFLink → data/
+
+# Smoke (quick verification)
+make train                   # 1 run with pre-Optuna baseline (configs/config.yml)
+make train-final             # 1 run with paper final config (configs/config_final.yml)
+make optuna-smoke            # 3 Optuna trials, ~30 min
+make ablation-smoke          # ~15 short runs across all 5 ablations
+make analysis                # Friedman + Wilcoxon-Holm on whatever is in results/
+
+# Full reproduction (paper)
+make optuna                  # 35 trials, ~10h — update config_final.yml with the best
+make ablation                # ~450 runs across the 5 thesis tables
+make analysis
 ```
 
-`make all` runs `data → train → analysis` sequentially.
+Per-ablation targets are also available (one per paper table):
+`make ablation-baseline`, `ablation-genes`, `ablation-sampler`,
+`ablation-tf`, `ablation-split-ratio` (each with a matching `-smoke`
+variant). Run `make help` for the full list.
 
-The individual steps are detailed in [scripts/README.md](scripts/README.md).
+> **Note.** `config.yml` is Laterza's starting setup before tuning;
+> `config_final.yml` is the result of the Optuna study (trial 18 + the
+> full TF layer) and is the configuration reported in the paper tables.
+> All ablations are run on top of `config_final.yml`.
+
+The individual preprocessing/training steps are detailed in
+[scripts/README.md](scripts/README.md).
 
 ### Installing `make` on Windows
 
@@ -144,17 +164,13 @@ tf_nodes_all_in_vocab.csv
 
 ## Configuration
 
-Default configuration in [configs/config.yml](configs/config.yml). Key fields:
+| File | Purpose |
+|---|---|
+| [configs/config.yml](configs/config.yml) | Starting baseline used by Laterza before hyperparameter search. `gat_tf`, no TF nodes, `num_epochs=50`, `lr=0.01`, random sampler. |
+| [configs/config_final.yml](configs/config_final.yml) | **Paper final configuration** (Optuna trial 18 + TF layer). `gcn_tf`, 700 genes + 100 miRNA + 200 TF, full prior knowledge (`gene_gene` / `mirna_*` / `tf_*` all True), `lr=0.0008`, `dropout=0.2`, `weighted` sampler with `γ=0.98`, `num_epochs=100`, `batch_size=64`. |
+| [configs/sweep_*.yml](configs/) | One sweep file per paper table — `baseline`, `genes`, `sampler`, `tf`, `split_ratio` — plus a `*_smoke.yml` variant of each for quick checks. |
 
-- `data.num_gene = 700`, `data.num_mirna = 100`, `data.num_tf = 200`
-- `data.omic_mode = 4` (expression + CNV + miRNA)
-- `data.gene_gene = True`, `data.mirna_gene = True`, `data.mirna_mirna = True`,
-  `data.tf_gene = True`, `data.tf_tf = True`, `data.tf_mirna = True`
-- `model.name = gcn_tf` (or `gat_tf`)
-- `sampler_strategy = weighted`, `sampler_gamma = 0.98`
-- `train.num_epochs = 100`, early stopping on val macro-F1
-
-The ablation results can be re-generated via the sweep configs in `configs/`.
+All ablations apply their overrides on top of `config_final.yml`.
 
 <!-- ## Citation
 
