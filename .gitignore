@@ -71,6 +71,7 @@ docs/
 docs*/
 Tests/
 tcga-pancan/
+analysis/*
 
 # Benchmark outputs
 benchmark/AMOGEL/output/
