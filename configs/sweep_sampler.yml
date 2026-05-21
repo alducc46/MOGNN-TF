@@ -1,43 +1,141 @@
-# Thesis ablation: sampling strategy.
-# 8 strategies × 7 seeds = 56 runs (as in the thesis sampler table).
-# The thesis uses the GCN backbone at 700 genes; baseline config_final
-# already sets these.
-name: ablation_sampler
-fixed_overrides:
-  model: { name: gcn_tf }
-grid:
-  sampler_strategy:
-    - random
-    - weighted
-    - weighted
-    - weighted
-    - weighted
-    - weighted
-    - weighted
-    - weighted
-  project.seed: [2020, 2021, 2022, 2023, 2024, 2025, 2026]
-# NB: sampling-specific knobs (gamma / alpha) are handled inline; the
-# grid above keeps 8 strategy "slots" so that each row in the sampler
-# table corresponds to one slot. For the gamma/alpha variants overridden
-# per-slot, prefer the explicit `experiments:` form below if you need
-# exact reproducibility.
+# Thesis ablation: sampling strategy (Table tab:sampler_combined).
+# 8 strategies × 7 seeds = 56 runs, GCN backbone @ 700 genes (set by
+# config_final.yml).
+#
+# Run names follow the convention used by collect_results.py:
+#     T3_<strategy>_seed<NNNN>_<YYYYMMDD>_<HHMMSS>
+# which yields group_from_name = T3_<strategy> and seed_from_name = <NNNN>.
+# This is what analize_metrics.py expects to run Friedman + Wilcoxon-Holm.
+#
+# Strategies (from the thesis):
+#   T3_random            sampler_strategy = random
+#   T3_alpha_1           sampler_mode = alpha, sampler_alpha = 1
+#   T3_alpha_2           sampler_mode = alpha, sampler_alpha = 2
+#   T3_alpha_3           sampler_mode = alpha, sampler_alpha = 3
+#   T3_gamma_090         sampler_mode = nulite, sampler_gamma = 0.90
+#   T3_gamma_095         sampler_mode = nulite, sampler_gamma = 0.95
+#   T3_gamma_098         sampler_mode = nulite, sampler_gamma = 0.98
+#   T3_gamma_099         sampler_mode = nulite, sampler_gamma = 0.99
+# Seeds: 2020 .. 2026 (7 seeds, as in the thesis).
+
 experiments:
-- name: random
-  overrides: { sampler_strategy: random }
-- name: alpha_1
-  overrides: { sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 1 }
-- name: alpha_2
-  overrides: { sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 2 }
-- name: alpha_3
-  overrides: { sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 3 }
-- name: gamma_090
-  overrides: { sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.90 }
-- name: gamma_095
-  overrides: { sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.95 }
-- name: gamma_098
-  overrides: { sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.98 }
-- name: gamma_099
-  overrides: { sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.99 }
-# Each of the 8 strategies above must be repeated across the 7 seeds
-# {2020..2026} to obtain the 56-run table — wrap this YAML in your own
-# driver loop, or duplicate the entries manually.
+# ---------------- T3_random (7 seeds) ----------------
+- name: T3_random_seed2020
+  overrides: { project: { seed: 2020 }, sampler_strategy: random }
+- name: T3_random_seed2021
+  overrides: { project: { seed: 2021 }, sampler_strategy: random }
+- name: T3_random_seed2022
+  overrides: { project: { seed: 2022 }, sampler_strategy: random }
+- name: T3_random_seed2023
+  overrides: { project: { seed: 2023 }, sampler_strategy: random }
+- name: T3_random_seed2024
+  overrides: { project: { seed: 2024 }, sampler_strategy: random }
+- name: T3_random_seed2025
+  overrides: { project: { seed: 2025 }, sampler_strategy: random }
+- name: T3_random_seed2026
+  overrides: { project: { seed: 2026 }, sampler_strategy: random }
+# ---------------- T3_alpha_1 (7 seeds) ----------------
+- name: T3_alpha_1_seed2020
+  overrides: { project: { seed: 2020 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 1 }
+- name: T3_alpha_1_seed2021
+  overrides: { project: { seed: 2021 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 1 }
+- name: T3_alpha_1_seed2022
+  overrides: { project: { seed: 2022 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 1 }
+- name: T3_alpha_1_seed2023
+  overrides: { project: { seed: 2023 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 1 }
+- name: T3_alpha_1_seed2024
+  overrides: { project: { seed: 2024 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 1 }
+- name: T3_alpha_1_seed2025
+  overrides: { project: { seed: 2025 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 1 }
+- name: T3_alpha_1_seed2026
+  overrides: { project: { seed: 2026 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 1 }
+# ---------------- T3_alpha_2 (7 seeds) ----------------
+- name: T3_alpha_2_seed2020
+  overrides: { project: { seed: 2020 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 2 }
+- name: T3_alpha_2_seed2021
+  overrides: { project: { seed: 2021 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 2 }
+- name: T3_alpha_2_seed2022
+  overrides: { project: { seed: 2022 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 2 }
+- name: T3_alpha_2_seed2023
+  overrides: { project: { seed: 2023 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 2 }
+- name: T3_alpha_2_seed2024
+  overrides: { project: { seed: 2024 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 2 }
+- name: T3_alpha_2_seed2025
+  overrides: { project: { seed: 2025 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 2 }
+- name: T3_alpha_2_seed2026
+  overrides: { project: { seed: 2026 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 2 }
+# ---------------- T3_alpha_3 (7 seeds) ----------------
+- name: T3_alpha_3_seed2020
+  overrides: { project: { seed: 2020 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 3 }
+- name: T3_alpha_3_seed2021
+  overrides: { project: { seed: 2021 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 3 }
+- name: T3_alpha_3_seed2022
+  overrides: { project: { seed: 2022 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 3 }
+- name: T3_alpha_3_seed2023
+  overrides: { project: { seed: 2023 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 3 }
+- name: T3_alpha_3_seed2024
+  overrides: { project: { seed: 2024 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 3 }
+- name: T3_alpha_3_seed2025
+  overrides: { project: { seed: 2025 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 3 }
+- name: T3_alpha_3_seed2026
+  overrides: { project: { seed: 2026 }, sampler_strategy: weighted, sampler_mode: alpha, sampler_alpha: 3 }
+# ---------------- T3_gamma_090 (7 seeds) ----------------
+- name: T3_gamma_090_seed2020
+  overrides: { project: { seed: 2020 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.90 }
+- name: T3_gamma_090_seed2021
+  overrides: { project: { seed: 2021 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.90 }
+- name: T3_gamma_090_seed2022
+  overrides: { project: { seed: 2022 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.90 }
+- name: T3_gamma_090_seed2023
+  overrides: { project: { seed: 2023 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.90 }
+- name: T3_gamma_090_seed2024
+  overrides: { project: { seed: 2024 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.90 }
+- name: T3_gamma_090_seed2025
+  overrides: { project: { seed: 2025 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.90 }
+- name: T3_gamma_090_seed2026
+  overrides: { project: { seed: 2026 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.90 }
+# ---------------- T3_gamma_095 (7 seeds) ----------------
+- name: T3_gamma_095_seed2020
+  overrides: { project: { seed: 2020 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.95 }
+- name: T3_gamma_095_seed2021
+  overrides: { project: { seed: 2021 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.95 }
+- name: T3_gamma_095_seed2022
+  overrides: { project: { seed: 2022 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.95 }
+- name: T3_gamma_095_seed2023
+  overrides: { project: { seed: 2023 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.95 }
+- name: T3_gamma_095_seed2024
+  overrides: { project: { seed: 2024 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.95 }
+- name: T3_gamma_095_seed2025
+  overrides: { project: { seed: 2025 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.95 }
+- name: T3_gamma_095_seed2026
+  overrides: { project: { seed: 2026 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.95 }
+# ---------------- T3_gamma_098 (7 seeds) ----------------
+- name: T3_gamma_098_seed2020
+  overrides: { project: { seed: 2020 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.98 }
+- name: T3_gamma_098_seed2021
+  overrides: { project: { seed: 2021 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.98 }
+- name: T3_gamma_098_seed2022
+  overrides: { project: { seed: 2022 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.98 }
+- name: T3_gamma_098_seed2023
+  overrides: { project: { seed: 2023 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.98 }
+- name: T3_gamma_098_seed2024
+  overrides: { project: { seed: 2024 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.98 }
+- name: T3_gamma_098_seed2025
+  overrides: { project: { seed: 2025 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.98 }
+- name: T3_gamma_098_seed2026
+  overrides: { project: { seed: 2026 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.98 }
+# ---------------- T3_gamma_099 (7 seeds) ----------------
+- name: T3_gamma_099_seed2020
+  overrides: { project: { seed: 2020 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.99 }
+- name: T3_gamma_099_seed2021
+  overrides: { project: { seed: 2021 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.99 }
+- name: T3_gamma_099_seed2022
+  overrides: { project: { seed: 2022 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.99 }
+- name: T3_gamma_099_seed2023
+  overrides: { project: { seed: 2023 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.99 }
+- name: T3_gamma_099_seed2024
+  overrides: { project: { seed: 2024 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.99 }
+- name: T3_gamma_099_seed2025
+  overrides: { project: { seed: 2025 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.99 }
+- name: T3_gamma_099_seed2026
+  overrides: { project: { seed: 2026 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.99 }

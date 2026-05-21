@@ -1,6 +1,10 @@
 #%%
 # Importa librerie
 import pandas as pd
+# Force non-interactive backend BEFORE importing pyplot so plt.show() is a no-op
+# when this script is invoked from the Makefile / a non-GUI context.
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -14,6 +18,18 @@ df = pd.read_csv("runs_for_stats.csv")
 
 print(f"Totale run caricati: {len(df)}")
 print(f"Colonne disponibili: {list(df.columns)}")
+
+# `group_from_name` is produced by collect_results.py only when the run
+# folder matches "<group>_seed<NNNN>_<date>_<time>". Newer sweep names
+# (e.g. ablation_genes_smoke_001_..., optuna_trial_0_...) do not match
+# that pattern, so the column may be absent here. Fall back to run_name
+# (with the trailing _YYYYMMDD_HHMMSS stripped) so downstream groupby
+# operations still work.
+if "group_from_name" not in df.columns:
+    df["group_from_name"] = df["run_name"].astype(str).str.replace(
+        r"_\d{8}_\d{6}$", "", regex=True
+    )
+    print("Note: 'group_from_name' was missing — derived it from run_name.")
 
 #%%
 # Panoramica dati
@@ -93,7 +109,11 @@ print(top10.to_string())
 # T3_random vs T3_alpha_* vs T3_nulite_g*
 #=========================
 # ragruppa solo questi esperimenti in un nuovo dataframe
-sampler_df = df[df['group_from_name'].isin(['T3_random', 'T3_alpha_0.5', 'T3_alpha_0.7', 'T3_alpha_0.9', 'T3_nulite_g1', 'T3_nulite_g2', 'T3_nulite_g3'])]
+sampler_df = df[df['group_from_name'].isin([
+    'T3_random',
+    'T3_alpha_1', 'T3_alpha_2', 'T3_alpha_3',
+    'T3_gamma_090', 'T3_gamma_095', 'T3_gamma_098', 'T3_gamma_099',
+])]
 print("\n=== ANALISI SAMPLER: T3_RANDOM vs T3_ALPHA_* vs T3_NULITE_G* ===")
 print(f"Totale run per analisi sampler: {len(sampler_df)}")
 # %%
@@ -152,6 +172,14 @@ from scipy.stats import wilcoxon
 t3 = df[df["group_from_name"].astype(str).str.startswith("T3_")].copy()
 BASE = "T3_random"
 
+# If no T3_* runs are present in the current results set, skip the
+# Wilcoxon-vs-random analysis entirely (it was specific to Laterza's
+# original sampler ablation). Avoids crashing on smoke/full runs that
+# don't use the T3_ naming convention.
+_skip_t3_block = t3.empty or BASE not in t3["group_from_name"].unique()
+if _skip_t3_block:
+    print("\n[skip] No T3_* runs found — Wilcoxon-vs-random block skipped.")
+
 def wilcoxon_vs_random(metric):
     wide = t3.pivot_table(index="split_id", columns="group_from_name", values=metric, aggfunc="mean")
 
@@ -186,23 +214,34 @@ def wilcoxon_vs_random(metric):
 
     return res
 
-print("\n=== Wilcoxon vs T3_random (VAL macro-F1) ===")
-print(wilcoxon_vs_random("val_f1_macro").round(6).to_string(index=False))
+if not _skip_t3_block:
+    print("\n=== Wilcoxon vs T3_random (VAL macro-F1) ===")
+    print(wilcoxon_vs_random("val_f1_macro").round(6).to_string(index=False))
 
-print("\n=== Wilcoxon vs T3_random (VAL weighted-F1) ===")
-print(wilcoxon_vs_random("val_f1_weighted").round(6).to_string(index=False))
+    print("\n=== Wilcoxon vs T3_random (VAL weighted-F1) ===")
+    print(wilcoxon_vs_random("val_f1_weighted").round(6).to_string(index=False))
+    # %%
+    #salva i risultati in un file CSV
+    sum_t3.to_csv("summary_t3_wilcoxon.csv", index=False)
 # %%
-#salva i risultati in un file CSV
-sum_t3.to_csv("summary_t3_wilcoxon.csv", index=False)
-# %%
-# metriche per classe:
+# metriche per classe (specifico per le run T3_*)
 # %%
 import os
 import pandas as pd
 
+if _skip_t3_block:
+    print("[skip] T3 per-class analysis skipped (no T3_* runs).")
+    raise SystemExit(0)
+
 os.makedirs("analysis", exist_ok=True)
 
 cls = pd.read_csv("class_report_long.csv")
+
+# Same fallback as above: derive group_from_name from run_name if absent.
+if "group_from_name" not in cls.columns:
+    cls["group_from_name"] = cls["run_name"].astype(str).str.replace(
+        r"_\d{8}_\d{6}$", "", regex=True
+    )
 
 t3c = cls[
     (cls["split"] == "val") &

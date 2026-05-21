@@ -138,9 +138,13 @@ ablation-smoke: ablation-baseline-smoke ablation-genes-smoke ablation-sampler-sm
 # --------------------------------------------------------------------
 # Analysis & aggregation
 # --------------------------------------------------------------------
+# `collect_results.py` writes its CSVs into --out_dir.
+# `analize_metrics.py` has no CLI: it reads runs_for_stats.csv and
+# class_report_long.csv from the current working directory, so we cd into
+# the analysis folder before invoking it.
 analysis:
-	$(PY) scripts/collect_results.py --results-root results/pancan
-	$(PY) scripts/analysis/analize_metrics.py
+	$(PY) scripts/collect_results.py --base_dir . --dataset pancan --out_dir analysis
+	cd analysis && $(PY) ../scripts/analysis/analize_metrics.py
 
 all: data train-final analysis
 
