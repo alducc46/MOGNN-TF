@@ -49,36 +49,34 @@ both gitignored.
 
 ## Installation
 
-Option A — conda:
+The reference environment is **Python 3.10 + PyTorch 2.7.0 (CUDA 12.8) +
+PyG 2.7.0**. Because PyTorch and the PyG C++ extensions (`torch_scatter`,
+`torch_sparse`, `pyg_lib`, …) are CUDA-specific wheels that are *not* on
+PyPI, they must be installed from the PyG wheel index **before**
+`pip install -e .`.
 
 ```bash
-conda env create -f environment.yml
+# 1. create the env (conda)
+conda create -n mognn-tf python=3.10 -y
 conda activate mognn-tf
+
+# 2. install the CUDA-12.8 torch / PyG stack from the PyG wheel index
+pip install torch==2.7.0 torchvision torchaudio \
+  --index-url https://download.pytorch.org/whl/cu128
+pip install --no-cache-dir \
+  pyg_lib torch-scatter torch-sparse torch-cluster torch-spline-conv \
+  -f https://data.pyg.org/whl/torch-2.7.0+cu128.html
+
+# 3. install the package + remaining pure-Python deps
 pip install -e .
 ```
 
-Option B — venv + pip:
-
-```bash
-python -m venv .venv && source .venv/bin/activate    # Windows: .venv\Scripts\activate
-pip install -e .
-```
-
-> **Note on PyTorch / PyG.** `pyproject.toml` pins `torch==2.1.1` and
-> `torch_geometric==2.4.0`. If you need CUDA wheels for `torch_scatter`,
-> `torch_sparse`, etc., install them separately from the PyG wheel index
-> after installing torch (see the [PyG installation guide](https://pytorch-geometric.readthedocs.io/en/2.4.0/install/installation.html)).
-
-
-If `torch-sparse` installation fails (common on some platforms), install PyTorch and PyG extensions separately:
-
-```bash
-pip install --index-url https://download.pytorch.org/whl/cu128 torch torchvision torchaudio
-pip install --no-cache-dir --only-binary=:all: \
-  pyg_lib torch-geometric torch-scatter torch-sparse torch-cluster torch-spline-conv \
-  termcolor torcheval \
-  -f https://data.pyg.org/whl/torch-2.7.1+cu128.html
-```
+> **Note.** Step 2 installs the CUDA wheels that step 3 (`pip install -e .`)
+> would otherwise try to pull from PyPI as CPU-only / wrong-version builds.
+> Always run step 2 first. For a CPU-only install, replace `cu128` with
+> `cpu` in both URLs. See the
+> [PyG installation guide](https://pytorch-geometric.readthedocs.io/en/2.7.0/install/installation.html)
+> for other CUDA versions.
 
 ## Reproducing the paper
 

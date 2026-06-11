@@ -12,18 +12,20 @@ dependencies:
   - matplotlib
   - seaborn
   - networkx
-  - fastparquet
   - pyarrow
-  - psutil
   - pip:
-      - torch==2.1.1
-      - torch_geometric==2.4.0
-      - pytorch-lightning==2.1.1
+      # torch / torch_geometric and the PyG C++ extensions are CUDA 12.8
+      # builds for torch 2.7.0. They are NOT on PyPI — install them from the
+      # PyG wheel index first (see README), then `pip install -e .` resolves
+      # the rest. Listing them here documents the pinned versions.
+      - --find-links https://data.pyg.org/whl/torch-2.7.0+cu128.html
+      - torch==2.7.0
+      - torch_geometric==2.7.0
+      - torcheval
+      - termcolor
       - optuna
       - wandb
-      - mlflow
       - python-dotenv
-      - pynvml
       - gdown
       - mygene
       - requests
