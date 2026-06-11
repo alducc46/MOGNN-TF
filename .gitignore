@@ -1,7 +1,7 @@
 # ============================================
 # Dataset, model artifacts, run outputs
 # ============================================
-*.csv
+#*.csv
 *.tsv
 *.npz
 *.zip
@@ -58,7 +58,11 @@ mlruns/
 # Project-specific generated content
 # ============================================
 data/
-results/
+results/pancan/a*
+results/pancan/o*
+results/pancan/p*
+results/pancan/s*
+results/pancan/T3*
 logs/
 figures/
 models/
@@ -81,3 +85,7 @@ benchmark/MOGONET/BRCA/
 benchmark/MOGONET/ROSMAP/
 benchmark/MPK-GNN/data/processed_data/
 
+
+# escusion
+!results\pancan\tf_interpretation\tf_global_ranking.csv
+!results\pancan\tf_interpretation\tf_fscore_per_subtype.csv
