@@ -40,7 +40,7 @@ def download(out_dir: str, keys=None):
 
         print(f"Downloading {file_name} -> {output_path} ...")
         try:
-            gdown.download(url, output_path, quiet=True, fuzzy=True)
+            gdown.download(url, output_path, quiet=True)
             print(f"Downloaded {output_name}")
         except Exception as e:
             print(f"Error downloading {file_name}: {e}")
