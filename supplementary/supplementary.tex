@@ -1,0 +1,380 @@
+% =====================================================================
+% supplementary.tex  —  MOGNN-TF Supplementary Material
+%
+% Standalone supplementary file. Compile on its own, or \input{} from the
+% main manuscript after \appendix.
+%
+% Table S1 — per-class precision/recall/F1 for the five compared models
+% Table S2 — per-class comparison of the gamma=0.98 sampler vs random
+%
+% All values transcribed verbatim (programmatically) from the thesis
+% results file: tab:per_class_comparison_best_std_correct (Table S1) and
+% tab:sampler_combined (Table S2). Mean +/- s.d. over eleven seeds (test
+% set) for Table S1. Cluster C24 (LAML) is absent from the source
+% per-class table; numbering skips from C23 to C25.
+% =====================================================================
+
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\setcounter{table}{0}
+\setcounter{figure}{0}
+
+\title{Supplementary Material\\
+\large MOGNN-TF: a heterogeneous graph neural network integrating
+transcription-factor regulation for pan-cancer molecular subtype
+classification}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Subtype legend}
+\noindent
+The iCluster pan-cancer subtypes (labels C1--C28; C24, LAML, is absent
+from the per-class evaluation table, so numbering skips from C23 to C25)
+are summarised below. Numbering follows Hoadley et al.
+
+\begin{table}[h]
+\centering
+\caption*{\textbf{Subtype legend.} iCluster subtype legend.}
+\label{tab:subtype_legend}
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{Label} & \textbf{Dominant tumour type / characterisation} \\
+\midrule
+C1  & BRCA (luminal-related) \\
+C2  & BRCA, HER2/ERBB2 amplified (also BLCA, STAD) \\
+C3  & Mesenchymal / immune-infiltrated \\
+C4  & Pan-GI (CRC; COAD/READ, chromosomal instability) \\
+C5  & CNS / endocrine \\
+C6  & OV (ovarian) \\
+C7  & Mixed, chr9 deletion \\
+C8  & UCEC (endometrial) \\
+C9  & ACC/KICH, hypodiploid \\
+C10 & Pan-SCC, 9p deletion (LUSC frequent) \\
+C11 & LGG, IDH1-mutant \\
+C12 & THCA (thyroid) \\
+C13 & Mixed, chr8 deletion (highly aneuploid) \\
+C14 & LUAD (lung adenocarcinoma) \\
+C15 & SKCM/UVM (melanoma) \\
+C16 & PRAD (prostate) \\
+C17 & BRCA, chr8q amplified \\
+C18 & Pan-GI, MSI (STAD/COAD) \\
+C19 & BRCA (luminal) \\
+C20 & Mixed, stromal/immune \\
+C21 & DLBC (lymphoma) \\
+C22 & TGCT (testicular germ-cell) \\
+C23 & GBM/LGG, IDH1 wild-type \\
+C25 & Pan-SCC, chr11 amplified \\
+C26 & LIHC (hepatocellular) \\
+C27 & Pan-SCC, HPV-associated (CESC, HPV+ HNSC) \\
+C28 & Pan-kidney (KIRC, KIRP) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+
+\begin{figure}[p]
+    \centering
+
+    % Proposed framework
+    \begin{subfigure}{\linewidth}
+        \centering
+        \textbf{MOGNN-TF (GCN, 700 genes)}\\[0.2cm]
+        \includegraphics[width=0.72\linewidth]{images/confusion_matrix_mognn_tf.png}
+        \caption{MOGNN-TF (GCN backbone, 700 selected genes).}
+        \label{fig:confusion_mognntf}
+    \end{subfigure}
+
+    \vspace{0.4cm}
+
+    % Baseline
+    \begin{subfigure}{\linewidth}
+        \centering
+        \textbf{Li24 baseline (GCN)}\\[0.2cm]
+        \includegraphics[width=0.72\linewidth]{images/confusion_matrix_li24_baseline.png}
+        \caption{Li24 baseline (Li et al., GCN backbone).}
+        \label{fig:confusion_li24}
+    \end{subfigure}
+
+    \caption{Row-normalised confusion matrices on the 27-class iCluster
+    pan-cancer taxonomy, averaged over the eleven seeds on the test set,
+    for the proposed MOGNN-TF (GCN, 700 genes) (top) and the Li24
+    baseline (Li et al., GCN) (bottom). Each row is
+    normalised by its class support, so the diagonal reports per-class
+    recall. The residual off-diagonal mass concentrates on a small number
+    of low-support, biologically adjacent clusters (e.g.\ the BRCA-related
+    C1/C17/C19 group and the chr8/chr9-deletion clusters C7/C13).}
+    \label{fig:confusion}
+\end{figure}
+
+\clearpage
+
+\begin{sidewaystable}[p]
+\centering
+\caption{Per-class precision (P), recall (R) and F1 for the five
+compared models, mean $\pm$ s.d.\ over eleven seeds on the test set.
+Best value per metric within each class in bold.}
+\label{tab:per_class_metrics}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.08}
+\resizebox{\textheight}{!}{%
+\begin{tabular}{lccccccccccccccc}
+\toprule
+\multirow{2}{*}{\textbf{Class}}
+& \multicolumn{3}{c}{\textbf{Li24 (GAT)}}
+& \multicolumn{3}{c}{\textbf{Li24 (GCN)}}
+& \multicolumn{3}{c}{\textbf{MoGCN}}
+& \multicolumn{3}{c}{\textbf{MOGNN-TF (GAT)}}
+& \multicolumn{3}{c}{\textbf{MOGNN-TF (GCN)}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}\cmidrule(lr){14-16}
+& \textbf{P} & \textbf{R} & \textbf{F1}
+& \textbf{P} & \textbf{R} & \textbf{F1}
+& \textbf{P} & \textbf{R} & \textbf{F1}
+& \textbf{P} & \textbf{R} & \textbf{F1}
+& \textbf{P} & \textbf{R} & \textbf{F1} \\
+\midrule
+C1 & \textbf{0.863} $\pm$ 0.162 & 0.445 $\pm$ 0.192 & 0.562 $\pm$ 0.191 & 0.835 $\pm$ 0.175 & 0.427 $\pm$ 0.215 & 0.533 $\pm$ 0.217 & 0.000 $\pm$ 0.000 & 0.000 $\pm$ 0.000 & 0.000 $\pm$ 0.000 & 0.794 $\pm$ 0.141 & 0.618 $\pm$ 0.183 & 0.670 $\pm$ 0.149 & 0.833 $\pm$ 0.131 & \textbf{0.645} $\pm$ 0.192 & \textbf{0.709} $\pm$ 0.142 \\
+C2 & 0.727 $\pm$ 0.161 & 0.530 $\pm$ 0.106 & 0.609 $\pm$ 0.117 & 0.722 $\pm$ 0.124 & 0.633 $\pm$ 0.106 & 0.668 $\pm$ 0.091 & 0.343 $\pm$ 0.167 & 0.079 $\pm$ 0.052 & 0.122 $\pm$ 0.072 & 0.707 $\pm$ 0.088 & \textbf{0.794} $\pm$ 0.076 & \textbf{0.742} $\pm$ 0.051 & \textbf{0.765} $\pm$ 0.088 & 0.718 $\pm$ 0.103 & 0.737 $\pm$ 0.077 \\
+C3 & 0.792 $\pm$ 0.051 & 0.828 $\pm$ 0.047 & 0.808 $\pm$ 0.033 & 0.795 $\pm$ 0.034 & 0.826 $\pm$ 0.063 & 0.809 $\pm$ 0.039 & 0.755 $\pm$ 0.040 & \textbf{0.873} $\pm$ 0.049 & 0.809 $\pm$ 0.037 & 0.815 $\pm$ 0.057 & 0.827 $\pm$ 0.052 & \textbf{0.819} $\pm$ 0.038 & \textbf{0.820} $\pm$ 0.045 & 0.819 $\pm$ 0.055 & 0.818 $\pm$ 0.039 \\
+C4 & 0.874 $\pm$ 0.046 & 0.904 $\pm$ 0.029 & 0.888 $\pm$ 0.028 & 0.875 $\pm$ 0.026 & 0.918 $\pm$ 0.035 & 0.896 $\pm$ 0.023 & 0.864 $\pm$ 0.028 & \textbf{0.938} $\pm$ 0.022 & 0.899 $\pm$ 0.021 & \textbf{0.913} $\pm$ 0.033 & 0.899 $\pm$ 0.050 & 0.905 $\pm$ 0.030 & 0.891 $\pm$ 0.056 & 0.924 $\pm$ 0.033 & \textbf{0.906} $\pm$ 0.027 \\
+C5 & 0.824 $\pm$ 0.057 & 0.767 $\pm$ 0.057 & 0.792 $\pm$ 0.036 & 0.845 $\pm$ 0.084 & 0.736 $\pm$ 0.088 & 0.784 $\pm$ 0.073 & \textbf{0.885} $\pm$ 0.044 & 0.672 $\pm$ 0.072 & 0.762 $\pm$ 0.048 & 0.853 $\pm$ 0.089 & 0.758 $\pm$ 0.057 & 0.799 $\pm$ 0.040 & 0.833 $\pm$ 0.059 & \textbf{0.782} $\pm$ 0.071 & \textbf{0.803} $\pm$ 0.040 \\
+C6 & 0.929 $\pm$ 0.026 & 0.965 $\pm$ 0.028 & 0.947 $\pm$ 0.018 & \textbf{0.952} $\pm$ 0.029 & 0.962 $\pm$ 0.021 & 0.957 $\pm$ 0.019 & 0.944 $\pm$ 0.031 & \textbf{0.982} $\pm$ 0.014 & \textbf{0.962} $\pm$ 0.021 & 0.940 $\pm$ 0.027 & 0.957 $\pm$ 0.027 & 0.948 $\pm$ 0.022 & 0.947 $\pm$ 0.030 & 0.959 $\pm$ 0.035 & 0.952 $\pm$ 0.026 \\
+C7 & 0.300 $\pm$ 0.110 & 0.196 $\pm$ 0.095 & 0.229 $\pm$ 0.085 & 0.265 $\pm$ 0.104 & 0.142 $\pm$ 0.060 & 0.180 $\pm$ 0.069 & 0.312 $\pm$ 0.150 & 0.093 $\pm$ 0.037 & 0.143 $\pm$ 0.059 & 0.269 $\pm$ 0.083 & 0.226 $\pm$ 0.073 & 0.244 $\pm$ 0.075 & \textbf{0.321} $\pm$ 0.107 & \textbf{0.235} $\pm$ 0.075 & \textbf{0.262} $\pm$ 0.068 \\
+C8 & 0.865 $\pm$ 0.040 & 0.886 $\pm$ 0.036 & 0.874 $\pm$ 0.022 & 0.880 $\pm$ 0.041 & 0.893 $\pm$ 0.037 & 0.886 $\pm$ 0.026 & 0.836 $\pm$ 0.052 & \textbf{0.899} $\pm$ 0.029 & 0.865 $\pm$ 0.030 & 0.901 $\pm$ 0.027 & 0.885 $\pm$ 0.047 & \textbf{0.892} $\pm$ 0.027 & \textbf{0.903} $\pm$ 0.040 & 0.878 $\pm$ 0.029 & 0.890 $\pm$ 0.025 \\
+C9 & \textbf{0.910} $\pm$ 0.034 & 0.906 $\pm$ 0.071 & 0.906 $\pm$ 0.038 & 0.891 $\pm$ 0.050 & 0.899 $\pm$ 0.044 & 0.895 $\pm$ 0.040 & 0.895 $\pm$ 0.041 & \textbf{0.956} $\pm$ 0.040 & \textbf{0.924} $\pm$ 0.027 & 0.888 $\pm$ 0.068 & 0.916 $\pm$ 0.055 & 0.900 $\pm$ 0.041 & 0.905 $\pm$ 0.041 & 0.906 $\pm$ 0.048 & 0.904 $\pm$ 0.027 \\
+C10 & 0.654 $\pm$ 0.072 & 0.701 $\pm$ 0.044 & 0.674 $\pm$ 0.044 & 0.669 $\pm$ 0.041 & 0.748 $\pm$ 0.055 & \textbf{0.705} $\pm$ 0.032 & 0.555 $\pm$ 0.024 & \textbf{0.774} $\pm$ 0.028 & 0.646 $\pm$ 0.022 & 0.662 $\pm$ 0.072 & 0.703 $\pm$ 0.079 & 0.675 $\pm$ 0.027 & \textbf{0.681} $\pm$ 0.037 & 0.707 $\pm$ 0.069 & 0.691 $\pm$ 0.029 \\
+C11 & \textbf{0.973} $\pm$ 0.022 & 0.985 $\pm$ 0.009 & \textbf{0.979} $\pm$ 0.010 & 0.949 $\pm$ 0.033 & 0.991 $\pm$ 0.008 & 0.970 $\pm$ 0.018 & 0.869 $\pm$ 0.036 & \textbf{0.998} $\pm$ 0.005 & 0.929 $\pm$ 0.021 & 0.959 $\pm$ 0.023 & 0.983 $\pm$ 0.026 & 0.971 $\pm$ 0.017 & 0.965 $\pm$ 0.025 & 0.983 $\pm$ 0.024 & 0.973 $\pm$ 0.015 \\
+C12 & \textbf{0.982} $\pm$ 0.014 & 0.978 $\pm$ 0.020 & 0.980 $\pm$ 0.009 & 0.979 $\pm$ 0.016 & 0.979 $\pm$ 0.014 & 0.979 $\pm$ 0.009 & 0.962 $\pm$ 0.024 & 0.980 $\pm$ 0.014 & 0.971 $\pm$ 0.014 & 0.979 $\pm$ 0.015 & \textbf{0.985} $\pm$ 0.019 & 0.982 $\pm$ 0.010 & 0.981 $\pm$ 0.021 & \textbf{0.985} $\pm$ 0.013 & \textbf{0.982} $\pm$ 0.008 \\
+C13 & 0.440 $\pm$ 0.034 & 0.379 $\pm$ 0.114 & 0.398 $\pm$ 0.071 & \textbf{0.460} $\pm$ 0.058 & 0.422 $\pm$ 0.078 & 0.438 $\pm$ 0.063 & 0.435 $\pm$ 0.084 & 0.318 $\pm$ 0.067 & 0.363 $\pm$ 0.064 & 0.456 $\pm$ 0.090 & \textbf{0.506} $\pm$ 0.156 & \textbf{0.469} $\pm$ 0.091 & 0.442 $\pm$ 0.083 & 0.487 $\pm$ 0.100 & 0.458 $\pm$ 0.070 \\
+C14 & 0.778 $\pm$ 0.036 & 0.789 $\pm$ 0.091 & 0.780 $\pm$ 0.045 & 0.768 $\pm$ 0.048 & 0.797 $\pm$ 0.066 & 0.780 $\pm$ 0.033 & \textbf{0.801} $\pm$ 0.019 & \textbf{0.810} $\pm$ 0.020 & \textbf{0.805} $\pm$ 0.010 & 0.779 $\pm$ 0.056 & 0.801 $\pm$ 0.044 & 0.787 $\pm$ 0.024 & 0.795 $\pm$ 0.038 & 0.804 $\pm$ 0.047 & 0.798 $\pm$ 0.024 \\
+C15 & 0.797 $\pm$ 0.029 & 0.890 $\pm$ 0.058 & 0.840 $\pm$ 0.033 & 0.787 $\pm$ 0.043 & 0.902 $\pm$ 0.038 & 0.840 $\pm$ 0.033 & 0.775 $\pm$ 0.036 & \textbf{0.949} $\pm$ 0.032 & \textbf{0.853} $\pm$ 0.027 & 0.800 $\pm$ 0.046 & 0.881 $\pm$ 0.055 & 0.836 $\pm$ 0.027 & \textbf{0.807} $\pm$ 0.040 & 0.906 $\pm$ 0.041 & 0.852 $\pm$ 0.015 \\
+C16 & 0.981 $\pm$ 0.013 & 0.995 $\pm$ 0.009 & 0.988 $\pm$ 0.007 & 0.984 $\pm$ 0.012 & 0.991 $\pm$ 0.009 & 0.988 $\pm$ 0.007 & 0.982 $\pm$ 0.013 & 0.995 $\pm$ 0.005 & 0.989 $\pm$ 0.008 & 0.983 $\pm$ 0.018 & 0.995 $\pm$ 0.007 & 0.989 $\pm$ 0.009 & \textbf{0.986} $\pm$ 0.011 & \textbf{0.997} $\pm$ 0.005 & \textbf{0.991} $\pm$ 0.006 \\
+C17 & 0.466 $\pm$ 0.106 & 0.337 $\pm$ 0.091 & 0.384 $\pm$ 0.080 & 0.525 $\pm$ 0.087 & 0.442 $\pm$ 0.049 & 0.476 $\pm$ 0.049 & 0.467 $\pm$ 0.080 & 0.140 $\pm$ 0.032 & 0.212 $\pm$ 0.035 & 0.447 $\pm$ 0.115 & 0.410 $\pm$ 0.118 & 0.418 $\pm$ 0.099 & \textbf{0.531} $\pm$ 0.101 & \textbf{0.467} $\pm$ 0.086 & \textbf{0.491} $\pm$ 0.080 \\
+C18 & 0.707 $\pm$ 0.065 & 0.689 $\pm$ 0.078 & 0.693 $\pm$ 0.036 & 0.757 $\pm$ 0.058 & 0.707 $\pm$ 0.045 & 0.730 $\pm$ 0.046 & 0.671 $\pm$ 0.055 & 0.648 $\pm$ 0.067 & 0.657 $\pm$ 0.044 & 0.756 $\pm$ 0.092 & \textbf{0.805} $\pm$ 0.086 & \textbf{0.773} $\pm$ 0.037 & \textbf{0.780} $\pm$ 0.058 & 0.770 $\pm$ 0.115 & 0.769 $\pm$ 0.060 \\
+C19 & 0.793 $\pm$ 0.038 & 0.843 $\pm$ 0.054 & 0.816 $\pm$ 0.035 & 0.815 $\pm$ 0.025 & 0.870 $\pm$ 0.048 & \textbf{0.840} $\pm$ 0.024 & 0.683 $\pm$ 0.015 & \textbf{0.927} $\pm$ 0.033 & 0.786 $\pm$ 0.014 & 0.832 $\pm$ 0.041 & 0.839 $\pm$ 0.044 & 0.834 $\pm$ 0.023 & \textbf{0.841} $\pm$ 0.026 & 0.843 $\pm$ 0.063 & \textbf{0.841} $\pm$ 0.032 \\
+C20 & 0.698 $\pm$ 0.059 & \textbf{0.722} $\pm$ 0.055 & 0.706 $\pm$ 0.024 & 0.761 $\pm$ 0.045 & 0.719 $\pm$ 0.051 & 0.737 $\pm$ 0.029 & 0.710 $\pm$ 0.023 & 0.701 $\pm$ 0.035 & 0.705 $\pm$ 0.026 & \textbf{0.796} $\pm$ 0.046 & 0.690 $\pm$ 0.049 & 0.737 $\pm$ 0.022 & 0.776 $\pm$ 0.048 & 0.713 $\pm$ 0.067 & \textbf{0.740} $\pm$ 0.031 \\
+C21 & 0.809 $\pm$ 0.167 & 0.606 $\pm$ 0.187 & 0.665 $\pm$ 0.162 & \textbf{0.817} $\pm$ 0.185 & 0.697 $\pm$ 0.180 & 0.723 $\pm$ 0.085 & 0.000 $\pm$ 0.000 & 0.000 $\pm$ 0.000 & 0.000 $\pm$ 0.000 & 0.785 $\pm$ 0.196 & 0.818 $\pm$ 0.174 & 0.788 $\pm$ 0.161 & 0.766 $\pm$ 0.142 & \textbf{0.879} $\pm$ 0.151 & \textbf{0.799} $\pm$ 0.084 \\
+C22 & 0.781 $\pm$ 0.088 & \textbf{0.764} $\pm$ 0.074 & 0.768 $\pm$ 0.054 & 0.822 $\pm$ 0.091 & 0.730 $\pm$ 0.086 & 0.770 $\pm$ 0.070 & \textbf{0.905} $\pm$ 0.080 & 0.703 $\pm$ 0.090 & \textbf{0.786} $\pm$ 0.055 & 0.811 $\pm$ 0.089 & 0.759 $\pm$ 0.086 & 0.778 $\pm$ 0.052 & 0.804 $\pm$ 0.071 & 0.757 $\pm$ 0.074 & 0.775 $\pm$ 0.036 \\
+C23 & 0.753 $\pm$ 0.132 & 0.682 $\pm$ 0.087 & 0.706 $\pm$ 0.062 & 0.739 $\pm$ 0.095 & 0.664 $\pm$ 0.175 & 0.690 $\pm$ 0.128 & \textbf{0.887} $\pm$ 0.097 & 0.455 $\pm$ 0.151 & 0.587 $\pm$ 0.120 & 0.682 $\pm$ 0.091 & \textbf{0.755} $\pm$ 0.163 & \textbf{0.708} $\pm$ 0.109 & 0.715 $\pm$ 0.084 & 0.700 $\pm$ 0.134 & 0.696 $\pm$ 0.061 \\
+C25 & 0.769 $\pm$ 0.115 & 0.636 $\pm$ 0.134 & 0.693 $\pm$ 0.117 & 0.803 $\pm$ 0.067 & \textbf{0.761} $\pm$ 0.066 & 0.779 $\pm$ 0.046 & 0.273 $\pm$ 0.410 & 0.006 $\pm$ 0.009 & 0.013 $\pm$ 0.018 & 0.784 $\pm$ 0.067 & 0.693 $\pm$ 0.072 & 0.733 $\pm$ 0.049 & \textbf{0.824} $\pm$ 0.062 & 0.748 $\pm$ 0.065 & \textbf{0.783} $\pm$ 0.054 \\
+C26 & \textbf{0.960} $\pm$ 0.022 & 0.983 $\pm$ 0.013 & \textbf{0.971} $\pm$ 0.012 & \textbf{0.960} $\pm$ 0.026 & 0.976 $\pm$ 0.022 & 0.967 $\pm$ 0.012 & 0.922 $\pm$ 0.033 & 0.996 $\pm$ 0.010 & 0.957 $\pm$ 0.020 & 0.942 $\pm$ 0.040 & 0.980 $\pm$ 0.020 & 0.960 $\pm$ 0.018 & 0.947 $\pm$ 0.041 & \textbf{0.997} $\pm$ 0.006 & \textbf{0.971} $\pm$ 0.021 \\
+C27 & 0.763 $\pm$ 0.035 & 0.789 $\pm$ 0.051 & 0.775 $\pm$ 0.029 & 0.799 $\pm$ 0.030 & 0.821 $\pm$ 0.048 & \textbf{0.809} $\pm$ 0.023 & 0.710 $\pm$ 0.026 & \textbf{0.845} $\pm$ 0.025 & 0.771 $\pm$ 0.023 & \textbf{0.820} $\pm$ 0.057 & 0.774 $\pm$ 0.070 & 0.793 $\pm$ 0.028 & 0.800 $\pm$ 0.054 & 0.824 $\pm$ 0.053 & \textbf{0.809} $\pm$ 0.027 \\
+C28 & 0.965 $\pm$ 0.015 & 0.982 $\pm$ 0.014 & 0.973 $\pm$ 0.006 & 0.959 $\pm$ 0.016 & \textbf{0.983} $\pm$ 0.013 & 0.970 $\pm$ 0.007 & 0.943 $\pm$ 0.019 & 0.977 $\pm$ 0.014 & 0.959 $\pm$ 0.011 & \textbf{0.969} $\pm$ 0.018 & 0.980 $\pm$ 0.010 & \textbf{0.975} $\pm$ 0.008 & 0.967 $\pm$ 0.022 & \textbf{0.983} $\pm$ 0.012 & \textbf{0.975} $\pm$ 0.011 \\
+\bottomrule
+\end{tabular}%
+}
+\end{sidewaystable}
+
+\clearpage
+
+\begin{table}[t]
+\centering
+\caption{Per-class effect of the weighted sampler ($\gamma = 0.98$)
+relative to random sampling, on a selection of low-support or hard
+classes. $\Delta$ values are (weighted $-$ random); positive favours the
+weighted sampler. ``Support'' is the test-set class size. The sampler
+ablation explored the grid $\gamma \in \{0.90, 0.95, 0.98, 0.99\}$ for the
+weight $w_c = K/(\gamma n_c + (1-\gamma) K)$, together with the alternative
+inverse-frequency parameterisation $w_c = (K/n_c)^{1/\alpha}$ for
+$\alpha \in \{1, 2, 3\}$; $\gamma = 0.98$ was retained for the final
+configuration.}
+\label{tab:sampler_per_class}
+\small
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Class} & \textbf{Support}
+& $\Delta$\textbf{F1 (val)} & $\Delta$\textbf{Rec (val)}
+& $\Delta$\textbf{F1 (test)} & $\Delta$\textbf{Rec (test)} \\
+\midrule
+C21 & 6   & $-0.0065$ & $+0.0476$ & $+0.0310$ & $\phantom{+}0.0000$ \\
+C1  & 10  & $+0.1039$ & $+0.1143$ & $+0.0820$ & $+0.0857$ \\
+C23 & 10  & $+0.0248$ & $+0.0714$ & $-0.0280$ & $+0.0429$ \\
+C9  & 27  & $+0.0107$ & $+0.0106$ & $+0.0082$ & $\phantom{+}0.0000$ \\
+C2  & 30  & $+0.0538$ & $+0.0952$ & $+0.0361$ & $+0.0809$ \\
+C17 & 37  & $-0.0166$ & $+0.0152$ & $-0.0115$ & $+0.0425$ \\
+C22 & 37  & $-0.0167$ & $+0.0116$ & $-0.0185$ & $\phantom{+}0.0000$ \\
+C7  & 38  & $+0.0439$ & $+0.0445$ & $-0.0039$ & $+0.0110$ \\
+C13 & 42  & $+0.0056$ & $+0.0102$ & $-0.0104$ & $-0.0170$ \\
+C5  & 53  & $-0.0029$ & $-0.0054$ & $-0.0185$ & $-0.0243$ \\
+C6  & 55  & $-0.0011$ & $-0.0052$ & $+0.0058$ & $\phantom{+}0.0000$ \\
+C24 & 56  & $-0.0124$ & $+0.0332$ & $-0.0065$ & $+0.0434$ \\
+C18 & 58  & $-0.0168$ & $\phantom{+}0.0000$ & $+0.0055$ & $+0.0351$ \\
+\midrule
+\textbf{Mean} & --- & $\mathbf{+0.0130}$ & $\mathbf{+0.0341}$ & $\mathbf{+0.0055}$ & $\mathbf{+0.0231}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+
+\begin{table}[t]
+\centering
+\caption{Effect of the number of selected input genes ($n$) on the
+proposed model (mean $\pm$ s.d., eleven seeds on the test set).
+$p$-values are from Wilcoxon signed-rank tests against the best
+configuration, GCN~(700), with Holm correction for multiple
+comparisons. Best per column in bold. Performance peaks at $700$ genes
+and plateaus between $500$ and $1{,}000$, indicating that the reported
+gain does not stem from simply enlarging the graph.}
+\label{tab:ablation_genes}
+\small
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Model ($n$ genes)} & \textbf{Accuracy} & \textbf{F1 Macro} & \textbf{F1 Weighted} & \textbf{$p$} & \textbf{$p_{\text{Holm}}$} \\
+\midrule
+GAT (300)  & $0.8060 \pm 0.0127$ & $0.7635 \pm 0.0152$ & $0.8009 \pm 0.0121$ & $4.9\times10^{-4}$ & $0.0034$ \\
+GCN (300)  & $0.8101 \pm 0.0140$ & $0.7722 \pm 0.0222$ & $0.8087 \pm 0.0134$ & $3.4\times10^{-3}$ & $0.0171$ \\
+\midrule
+GAT (500)  & $0.8229 \pm 0.0128$ & $0.7813 \pm 0.0180$ & $0.8198 \pm 0.0126$ & $0.0415$ & $0.1245$ \\
+GCN (500)  & $0.8283 \pm 0.0117$ & $0.7901 \pm 0.0169$ & $0.8252 \pm 0.0126$ & $0.3188$ & $0.5195$ \\
+\midrule
+GAT (700)  & $0.8200 \pm 0.0113$ & $0.7824 \pm 0.0155$ & $0.8188 \pm 0.0110$ & $6.8\times10^{-3}$ & $0.0273$ \\
+GCN (700)  & $\mathbf{0.8285 \pm 0.0134}$ & $\mathbf{0.7918 \pm 0.0156}$ & $\mathbf{0.8264 \pm 0.0121}$ & --- & --- \\
+\midrule
+GAT (1000) & $0.8038 \pm 0.0138$ & $0.7641 \pm 0.0162$ & $0.8017 \pm 0.0146$ & $9.8\times10^{-4}$ & $0.0059$ \\
+GCN (1000) & $0.8248 \pm 0.0140$ & $0.7864 \pm 0.0159$ & $0.8220 \pm 0.0147$ & $0.2598$ & $0.5195$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+
+
+
+\begin{table}[t]
+\centering
+\caption{Top five transcription factors per iCluster subtype, ranked by
+one-vs-rest ANOVA F-score on the training split. For each subtype we list
+the five TFs with the highest F-score, alongside the dominant
+cell-of-origin lineage of that cluster (after Hoadley et al.). The top of
+the ranking is enriched for lineage-defining master regulators, recovered
+without any external gene-set annotation. Gene symbols follow HGNC
+nomenclature. The ten subtypes with the cleanest lineage signal are shown;
+the full 27-subtype ranking is released with the project code.}
+\label{tab:tf_bio}
+\small
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{llp{0.46\linewidth}}
+\toprule
+\textbf{Subtype} & \textbf{Lineage} & \textbf{Top TFs (one-vs-rest F-score, descending)} \\
+\midrule
+C11 & Glioma (LGG)         & OLIG2, POU3F2, NEUROD1, VDR, FOXG1 \\
+C19 & Breast (luminal)     & LMX1B, GATA3, TRPS1, TFAP2B, ESR1 \\
+C4  & Pan-GI (colorectal)  & CDX1, CDX2, NR1I2, PDX1, HNF4A \\
+C26 & Liver (LIHC)         & NR0B2, NR1H4, MLXIPL, NR5A2, NR1I2 \\
+C28 & Pan-kidney           & PAX2, NR1H4, HNF1B, HOXA4, HNF1A \\
+C15 & Melanoma (SKCM/UVM)  & PAX3, SOX10, FOXD3, ELF3, IRF6 \\
+C6  & Ovarian (serous)     & WT1, SOX17, PHOX2A, HOXD3, HOXD1 \\
+C22 & Germ-cell (TGCT)     & LIN28A, POU5F1, SALL4, GBX2, NR5A1 \\
+C10 & Pan-SCC (squamous)   & TP63, FOXE1, FOXN1, SOX2, OTX1 \\
+C16 & Prostate (PRAD)      & HOXB13, BHLHA15, GATA2, SIM2, SPDEF \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\clearpage
+
+
+\begin{table}[t]
+\centering
+\caption{Final MOGNN-TF configuration (Optuna trial 18, selected by
+validation macro-F1). The full search grid is reported in the project
+repository and reproduced verbatim by \texttt{config\_final.yml}.}
+\label{tab:hyperparams}
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{Hyperparameter} & \textbf{Value} \\
+\midrule
+\multicolumn{2}{l}{\textit{Graph and feature selection}} \\
+\quad Selected genes ($N_g$)        & $700$ \\
+\quad Selected miRNAs ($N_m$)       & $100$ \\
+\quad Selected TFs ($N_t$)          & $200$ \\
+\quad Feature selection             & variance \\
+\quad Active edge types             & $E_{GG}, E_{MG}, E_{MM}, E_{TG}, E_{TT}, E_{TM}$ \\
+\midrule
+\multicolumn{2}{l}{\textit{Architecture}} \\
+\quad GNN backbone                  & GCN \\
+\quad Pool size                     & $16$ \\
+\quad Jumping knowledge             & disabled \\
+\quad Parallel branch               & enabled \\
+\quad Decoder (reconstruction)      & enabled \\
+\quad Dropout                       & $0.2$ \\
+\midrule
+\multicolumn{2}{l}{\textit{Optimisation}} \\
+\quad Optimiser                     & AdamW \\
+\quad Learning rate                 & $8 \times 10^{-4}$ \\
+\quad Weight decay                  & $1 \times 10^{-4}$ \\
+\quad Manual L2 on GNN weights      & $5 \times 10^{-4}$ \\
+\quad Batch size                    & $64$ \\
+\quad LR schedule                   & cosine annealing \\
+\quad Max epochs / patience         & $100$ / $10$ \\
+\midrule
+\multicolumn{2}{l}{\textit{Class imbalance}} \\
+\quad Sampler                       & \texttt{WeightedRandomSampler} \\
+\quad Weighting                     & $w_c = K/(\gamma n_c + (1-\gamma)K)$ \\
+\quad $\gamma$                      & $0.98$ \\
+\quad Cross-entropy weighting       & disabled (handled by sampler) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+
+
+\begin{table}[t]
+\centering
+\caption{Effect of the training fraction on the proposed model
+(mean $\pm$ s.d., eleven seeds on the test set). The validation set is
+held at $10\%$ and the remainder assigned to test. Performance degrades
+gracefully as supervision is reduced: GCN macro-F1 moves from $0.7978$ at
+$80\%$ to $0.7779$ at $50\%$, and the GCN--GAT ordering is preserved at
+every fraction. The degradation is not statistically resolvable in the
+upper range; the $80\%$ versus $60\%$ GCN difference is not significant
+(Wilcoxon signed-rank, $p_{\text{Holm}} = 0.83$).}
+\label{tab:splits_comparison}
+\small
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{llccc}
+\toprule
+\textbf{Train \%} & \textbf{Model} & \textbf{Accuracy} & \textbf{F1 Macro} & \textbf{F1 Weighted} \\
+\midrule
+\multirow{2}{*}{$80\%$} & GAT & $0.8287 \pm 0.0094$ & $0.7891 \pm 0.0205$ & $0.8255 \pm 0.0108$ \\
+                        & GCN & $0.8355 \pm 0.0123$ & $\mathbf{0.7978 \pm 0.0205}$ & $0.8342 \pm 0.0119$ \\
+\midrule
+\multirow{2}{*}{$70\%$} & GAT & $0.8181 \pm 0.0164$ & $0.7798 \pm 0.0216$ & $0.8153 \pm 0.0171$ \\
+                        & GCN & $0.8245 \pm 0.0132$ & $0.7865 \pm 0.0155$ & $0.8224 \pm 0.0119$ \\
+\midrule
+\multirow{2}{*}{$60\%$} & GAT & $0.8156 \pm 0.0141$ & $0.7756 \pm 0.0131$ & $0.8133 \pm 0.0139$ \\
+                        & GCN & $0.8292 \pm 0.0144$ & $0.7971 \pm 0.0162$ & $0.8280 \pm 0.0142$ \\
+\midrule
+\multirow{2}{*}{$50\%$} & GAT & $0.8106 \pm 0.0178$ & $0.7735 \pm 0.0187$ & $0.8091 \pm 0.0162$ \\
+                        & GCN & $0.8169 \pm 0.0151$ & $0.7779 \pm 0.0178$ & $0.8154 \pm 0.0150$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

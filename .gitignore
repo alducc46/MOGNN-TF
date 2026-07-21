@@ -12,6 +12,10 @@
 *.pdf
 # Exceptions for tracked config-like files
 !*config_test.json
+# Supplementary material is a released artifact, not a build output
+!supplementary/supplementary.pdf
+# Local authoring helper, not part of the release
+supplementary/extract_tables_from_tex.py
 
 # Images and plots (regenerable)
 *.png
