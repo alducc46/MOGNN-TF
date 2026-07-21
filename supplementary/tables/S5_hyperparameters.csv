@@ -1,0 +1,23 @@
+section,hyperparameter,value
+Graph and feature selection,Selected genes (N_g),700
+Graph and feature selection,Selected miRNAs (N_m),100
+Graph and feature selection,Selected TFs (N_t),200
+Graph and feature selection,Feature selection,variance
+Graph and feature selection,Active edge types,"E_GG, E_MG, E_MM, E_TG, E_TT, E_TM"
+Architecture,GNN backbone,GCN
+Architecture,Pool size,16
+Architecture,Jumping knowledge,disabled
+Architecture,Parallel branch,enabled
+Architecture,Decoder (reconstruction),enabled
+Architecture,Dropout,0.2
+Optimisation,Optimiser,AdamW
+Optimisation,Learning rate,8 x 10^-4
+Optimisation,Weight decay,1 x 10^-4
+Optimisation,Manual L2 on GNN weights,5 x 10^-4
+Optimisation,Batch size,64
+Optimisation,LR schedule,cosine annealing
+Optimisation,Max epochs / patience,100 / 10
+Class imbalance,Sampler,WeightedRandomSampler
+Class imbalance,Weighting,w_c = K/(gamma n_c + (1-gamma)K)
+Class imbalance,gamma,0.98
+Class imbalance,Cross-entropy weighting,disabled (handled by sampler)

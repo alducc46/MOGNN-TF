@@ -1,0 +1,51 @@
+subtype,lineage,rank,tf
+C11,Glioma (LGG),1,OLIG2
+C11,Glioma (LGG),2,POU3F2
+C11,Glioma (LGG),3,NEUROD1
+C11,Glioma (LGG),4,VDR
+C11,Glioma (LGG),5,FOXG1
+C19,Breast (luminal),1,LMX1B
+C19,Breast (luminal),2,GATA3
+C19,Breast (luminal),3,TRPS1
+C19,Breast (luminal),4,TFAP2B
+C19,Breast (luminal),5,ESR1
+C4,Pan-GI (colorectal),1,CDX1
+C4,Pan-GI (colorectal),2,CDX2
+C4,Pan-GI (colorectal),3,NR1I2
+C4,Pan-GI (colorectal),4,PDX1
+C4,Pan-GI (colorectal),5,HNF4A
+C26,Liver (LIHC),1,NR0B2
+C26,Liver (LIHC),2,NR1H4
+C26,Liver (LIHC),3,MLXIPL
+C26,Liver (LIHC),4,NR5A2
+C26,Liver (LIHC),5,NR1I2
+C28,Pan-kidney,1,PAX2
+C28,Pan-kidney,2,NR1H4
+C28,Pan-kidney,3,HNF1B
+C28,Pan-kidney,4,HOXA4
+C28,Pan-kidney,5,HNF1A
+C15,Melanoma (SKCM/UVM),1,PAX3
+C15,Melanoma (SKCM/UVM),2,SOX10
+C15,Melanoma (SKCM/UVM),3,FOXD3
+C15,Melanoma (SKCM/UVM),4,ELF3
+C15,Melanoma (SKCM/UVM),5,IRF6
+C6,Ovarian (serous),1,WT1
+C6,Ovarian (serous),2,SOX17
+C6,Ovarian (serous),3,PHOX2A
+C6,Ovarian (serous),4,HOXD3
+C6,Ovarian (serous),5,HOXD1
+C22,Germ-cell (TGCT),1,LIN28A
+C22,Germ-cell (TGCT),2,POU5F1
+C22,Germ-cell (TGCT),3,SALL4
+C22,Germ-cell (TGCT),4,GBX2
+C22,Germ-cell (TGCT),5,NR5A1
+C10,Pan-SCC (squamous),1,TP63
+C10,Pan-SCC (squamous),2,FOXE1
+C10,Pan-SCC (squamous),3,FOXN1
+C10,Pan-SCC (squamous),4,SOX2
+C10,Pan-SCC (squamous),5,OTX1
+C16,Prostate (PRAD),1,HOXB13
+C16,Prostate (PRAD),2,BHLHA15
+C16,Prostate (PRAD),3,GATA2
+C16,Prostate (PRAD),4,SIM2
+C16,Prostate (PRAD),5,SPDEF
