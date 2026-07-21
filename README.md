@@ -2,6 +2,8 @@
 
 **Multi-Omics Graph Neural Network with Transcription Factors for pan-cancer molecular subtype prediction.**
 
+https://doi.org/10.5281/zenodo.21475911
+
 MOGNN-TF integrates gene expression, copy number variation and miRNA expression
 from the TCGA Pan-Cancer Atlas into a heterogeneous multi-relational graph,
 extending the multimodal GNN framework of Li & Nabavi (2024) with an explicit
