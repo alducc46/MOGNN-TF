@@ -1,0 +1,28 @@
+subtype,dominant_tumour_type
+C1,BRCA (luminal-related)
+C2,"BRCA, HER2/ERBB2 amplified (also BLCA, STAD)"
+C3,Mesenchymal / immune-infiltrated
+C4,"Pan-GI (CRC; COAD/READ, chromosomal instability)"
+C5,CNS / endocrine
+C6,OV (ovarian)
+C7,"Mixed, chr9 deletion"
+C8,UCEC (endometrial)
+C9,"ACC/KICH, hypodiploid"
+C10,"Pan-SCC, 9p deletion (LUSC frequent)"
+C11,"LGG, IDH1-mutant"
+C12,THCA (thyroid)
+C13,"Mixed, chr8 deletion (highly aneuploid)"
+C14,LUAD (lung adenocarcinoma)
+C15,SKCM/UVM (melanoma)
+C16,PRAD (prostate)
+C17,"BRCA, chr8q amplified"
+C18,"Pan-GI, MSI (STAD/COAD)"
+C19,BRCA (luminal)
+C20,"Mixed, stromal/immune"
+C21,DLBC (lymphoma)
+C22,TGCT (testicular germ-cell)
+C23,"GBM/LGG, IDH1 wild-type"
+C25,"Pan-SCC, chr11 amplified"
+C26,LIHC (hepatocellular)
+C27,"Pan-SCC, HPV-associated (CESC, HPV+ HNSC)"
+C28,"Pan-kidney (KIRC, KIRP)"

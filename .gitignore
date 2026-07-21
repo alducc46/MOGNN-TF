@@ -1,7 +1,7 @@
 # ============================================
 # Dataset, model artifacts, run outputs
 # ============================================
-*.csv
+#*.csv
 *.tsv
 *.npz
 *.zip
@@ -12,6 +12,10 @@
 *.pdf
 # Exceptions for tracked config-like files
 !*config_test.json
+# Supplementary material is a released artifact, not a build output
+!supplementary/supplementary.pdf
+# Local authoring helper, not part of the release
+supplementary/extract_tables_from_tex.py
 
 # Images and plots (regenerable)
 *.png
@@ -58,7 +62,11 @@ mlruns/
 # Project-specific generated content
 # ============================================
 data/
-results/
+results/pancan/a*
+results/pancan/o*
+results/pancan/p*
+results/pancan/s*
+results/pancan/T3*
 logs/
 figures/
 models/
@@ -81,3 +89,7 @@ benchmark/MOGONET/BRCA/
 benchmark/MOGONET/ROSMAP/
 benchmark/MPK-GNN/data/processed_data/
 
+
+# escusion
+!results\pancan\tf_interpretation\tf_global_ranking.csv
+!results\pancan\tf_interpretation\tf_fscore_per_subtype.csv

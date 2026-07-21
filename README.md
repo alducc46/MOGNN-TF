@@ -38,6 +38,10 @@ the 27-class iCluster molecular subtype taxonomy of Hoadley et al. (2018).
 │       ├── omics/                 # TCGA omics processing
 │       └── priors/                # BioGRID / miRDB / TFLink
 ├── benchmark/                     # vendored baselines (Li24, MoGCN)
+├── supplementary/                 # supplementary material (S1-S6, Figure S1)
+│   ├── supplementary.pdf          # as referenced by the manuscript
+│   ├── supplementary.tex          # LaTeX source of the PDF
+│   └── tables/                    # machine-readable version of every table
 ├── Makefile                       # pipeline orchestration
 ├── pyproject.toml                 # package metadata + dependencies
 ├── environment.yml                # conda environment
@@ -134,6 +138,25 @@ If you prefer not to install `make`, every target maps 1:1 to a Python
 command — see [scripts/README.md](scripts/README.md) and run them
 directly, e.g. `python scripts/train.py --config configs/config.yml`
 instead of `make train`.
+
+## Supplementary Material
+
+The manuscript refers to Supplementary Tables **S1–S6** and Supplementary
+**Figure S1**. They live in [supplementary/](supplementary/), together with a
+machine-readable CSV for every table. Labels match the manuscript exactly.
+
+| ID | Content | Machine-readable source |
+| --- | --- | --- |
+| **Figure S1** | Row-normalised confusion matrices, MOGNN-TF (GCN, 700 genes) vs Li24 (GCN) | figure only — see PDF |
+| **S1** | Per-class precision / recall / F1 for the five compared models, mean ± s.d. over eleven seeds | [`S1_per_class_metrics.csv`](supplementary/tables/S1_per_class_metrics.csv) |
+| **S2** | Per-class effect of the weighted sampler (γ = 0.98) vs random sampling | [`S2_sampler_per_class.csv`](supplementary/tables/S2_sampler_per_class.csv) |
+| **S3** | Effect of the number of selected input genes (*n* ∈ {300, 500, 700, 1000}) | [`S3_gene_ablation.csv`](supplementary/tables/S3_gene_ablation.csv) |
+| **S4** | Top transcription factors per iCluster subtype (one-vs-rest ANOVA F-score) | [`S4_tf_top5_per_subtype.csv`](supplementary/tables/S4_tf_top5_per_subtype.csv) · full 27-subtype ranking: [`S4_tf_ranking_full_27subtypes.csv`](supplementary/tables/S4_tf_ranking_full_27subtypes.csv) |
+| **S5** | Final MOGNN-TF configuration (Optuna trial 18) | [`S5_hyperparameters.csv`](supplementary/tables/S5_hyperparameters.csv) · [`S5_config_final.yml`](supplementary/tables/S5_config_final.yml) |
+| **S6** | Effect of the training fraction (80 / 70 / 60 / 50 %) | [`S6_train_fraction.csv`](supplementary/tables/S6_train_fraction.csv) |
+
+See [supplementary/README.md](supplementary/README.md) for per-table notes and
+the pipeline stage that produces each table.
 
 ## Data sources
 
