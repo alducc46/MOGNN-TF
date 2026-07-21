@@ -37,7 +37,7 @@ the 27-class iCluster molecular subtype taxonomy of Hoadley et al. (2018).
 │   └── preprocessing/
 │       ├── omics/                 # TCGA omics processing
 │       └── priors/                # BioGRID / miRDB / TFLink
-├── benchmark/                     # baseline implementations (Li24, MoGCN, ...)
+├── benchmark/                     # vendored baselines (Li24, MoGCN)
 ├── Makefile                       # pipeline orchestration
 ├── pyproject.toml                 # package metadata + dependencies
 ├── environment.yml                # conda environment

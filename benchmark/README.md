@@ -1,134 +1,90 @@
-# Modelli di Benchmarking
+# Benchmark baselines
 
-Questo documento descrive i modelli selezionati per il benchmarking, approfondendo le loro caratteristiche principali. Di seguito sono riportate le modalità di fusione, la costruzione del grafo, i dettagli sui modelli e le omiche utilizzate.
+This directory vendors the third-party implementations used to produce the
+baseline columns of the model comparison reported in the manuscript and in
+Supplementary Table S1.
 
-## Modalità di Fusione
+Both are redistributed under their own licenses so that the comparison can be
+re-run from a single checkout. **Copyright remains with the original authors.**
 
-![Immagine del processo di benchmarking](images/image.png)
-Le modalità di fusione rappresentano le strategie utilizzate per integrare i dati multi-omici:
+## Contents
 
-- **Early Fusion**: L'integrazione avviene prima dell'elaborazione, combinando i dati grezzi provenienti da diverse omiche in un unico input
-- **Intermediate Fusion**: Ogni omica viene elaborata singolarmente utilizzando sottoreti per generare embedding, che vengono poi combinate per l'addestramento del modello
-- **Late Fusion**: Le omiche vengono elaborate separatamente e i risultati finali vengono combinati in una fase successiva
+### `Multimodal-GNN-for-Cancer-Subtype-Clasification/` — "Li24"
 
-## Costruzione del Grafo
-La costruzione del grafo è un passaggio cruciale per rappresentare le relazioni tra i dati. Esistono due tipi di approcci:
+The multimodal GNN framework of Li & Nabavi, which this work extends. Builds a
+heterogeneous multi-level supra-graph from prior knowledge, with intra-omic
+(gene–gene) and inter-omic (miRNA–gene) connections, over GCN/GAT backbones.
 
-- **Patient Similarity Network**: Questo approccio si basa sulla costruzione di un grafo fondato sulla somiglianza tra i pazienti, utilizzando metriche di distanza o correlazione calcolate sui dati multi-omici.
-- **Prior Knowledge Graphs**:Viene utilizzata una conoscenze a priori, come reti biologiche o pathway, per costruire un grafo che rappresenti le relazioni note tra geni, proteine o altre entità biologiche
+| | |
+| --- | --- |
+| Reference | Li, B. & Nabavi, S., *A Multimodal Graph Neural Network Framework for Cancer Molecular Subtype Classification*, 2024 — [arXiv:2302.12838](https://arxiv.org/abs/2302.12838) |
+| License | MIT — Copyright (c) 2023 CompGBI LAB (see `LICENSE` in the directory) |
+| Provides | the `Li24 (GAT)` and `Li24 (GCN)` columns |
 
-## Modelli di Benchmarking
-
-I modelli selezionati per il benchmarking che rappresentano lo stato dell'arte scelto:
-
-- **MOGONET**: Costruisce, per ogni omica, un grafo paziente–paziente basato su similarità coseno. Integra le viste a valle con VCDN per identificare correlazioni nel dominio delle lables.
-- **MOGAT**: Come MOGONET usa grafi paziente–paziente, ma applica GAT per pesare i vicini. Non inserisce archi biologici espliciti (PPI/KEGG). PK assente.
-- **MoGCN**: Integra un autoencoder multimodale per estrarre rappresentazioni dai dati (RNA-seq, CNV, proteomica) e costruisce una rete di similarità tra pazienti tramite Similarity Network Fusion (SNF).
-- **SUPREME**:Integra più reti di similarità tra pazienti (una per omica) e applica GCN su ciascuna rete; le embedding dei pazienti ottenute vengono combinate con le raw features
-- **AMOGEL**: Genera un grafo dai dati via Association Rule Mining (intra/inter-omico) e lo arricchisce con prior biologici come archi ausiliari. Usa attenzione e produce ranking di geni.
-- **Multimodal GNN (Li & Nabavi 2024)**: Implementa una GNN multimodale basata su un supra-grafo eterogeneo multilivello, costruito utilizzando PK, con connessioni intra-omiche (gene–gene) e inter-omiche (es. miRNA–gene). Fa uso di GCN/GAT.
-- **MPK-GNN**: Combina rappresentazioni locali, apprese tramite encoder GNN per ciascun grafo biologico, e rappresentazioni globali, derivate da una rete MLP sui dati multi-omici originali. Utilizza un meccanismo di apprendimento contrastivo per massimizzare la coerenza tra rappresentazioni di campioni ottenuti da grafi differenti.
-
-MOGONET → GCN + VCDN
-
-MoGCN → AE + GCN
-
-MOGAT → GAT
-
-SUPREME → GCN (+ raw fusion)
-
-AMOGEL → ARM + GNN(attn)
-
-Multimodal GNN (Li & Nabavi 2024) → GCN/GAT (hetero)
-
-MPK-GNN → GNN enc + MLP + Contrastive Learning
-
-
-## Run
-
-### AMOGEL
 ```bash
-# Installazione dipendenze
-pip install -r requirements.txt
+conda env create -f environment.yml
+conda activate <env_name>
 
-# Esecuzione del modello con dataset BRCA
-python src/amogel/model.py --dataset BRCA
+python cancer_test.py --model gat --num_gene 100 --cancer_subtype True \
+  --omic_mode 4 --shuffle_index 0 --gene_gene True --mirna_gene True \
+  --mirna_mirna True --parallel True --l2 True --decoder False \
+  --poolsize 8 --edge_weight True --epochs 200 --train_ratio 0.7 --test_ratio 0.1
 ```
 
-### MOGAT-main
-```bash
-# Installazione dipendenze
-pip install -r Requirements.txt
+### `MoGCN/` — "MoGCN"
 
-# Esecuzione del modello
-python mogat1.py
-python mogat2.py
-```
+Multi-omics integration via a multimodal autoencoder, with a patient similarity
+network built by Similarity Network Fusion (SNF) and classified with a GCN.
 
-### MoGCN
+| | |
+| --- | --- |
+| Upstream | https://github.com/Lifoof/MoGCN |
+| License | MIT — Copyright (c) 2021 Lifoof (see `LICENSE` in the directory) |
+| Provides | the `MoGCN` column |
+
 ```bash
-# Installazione dipendenze
 pip install -r requirements.txt
 
-# Esecuzione sequenziale del workflow
-# 1. Autoencoder per riduzione dimensionalità
-python AE_run.py -p1 data/fpkm_data.csv -p2 data/gistic_data.csv -p3 data/rppa_data.csv -m 0 -s 0 -d cpu
+# 1. autoencoder for dimensionality reduction
+python AE_run.py -p1 data/fpkm_data.csv -p2 data/gistic_data.csv \
+  -p3 data/rppa_data.csv -m 0 -s 0 -d cpu
 
 # 2. Similarity Network Fusion
-python SNF.py -p data/fpkm_data.csv data/gistic_data.csv data/rppa_data.csv -m sqeuclidean
+python SNF.py -p data/fpkm_data.csv data/gistic_data.csv data/rppa_data.csv \
+  -m sqeuclidean
 
-# 3. GCN standard
-python GCN_run.py -fd result/latent_data.csv -ad result/SNF_fused_matrix.csv -ld data/sample_classes.csv -ts data/test_sample.csv -m 1 -d gpu -p 20
-
-# oppure GCN con PyTorch Geometric
-python GCN_pyg_run.py -fd result/latent_data.csv -ad result/SNF_fused_matrix.csv -ld data/sample_classes.csv -ts data/test_sample.csv -m 1 -d gpu -p 20
+# 3. GCN (or GCN_pyg_run.py for the PyTorch Geometric variant)
+python GCN_run.py -fd result/latent_data.csv -ad result/SNF_fused_matrix.csv \
+  -ld data/sample_classes.csv -ts data/test_sample.csv -m 1 -d gpu -p 20
 ```
 
-### MOGONET
-```bash
-# Installazione dipendenze
-pip install -r requirements.txt
+### `run_tests.py`
 
-# Esecuzione per classificazione
-python main_mogonet.py
+Driver that sweeps the Li24 baseline over the same gene counts and backbones
+used for MOGNN-TF, so that baseline and proposed model are evaluated under
+matched settings.
 
-# Esecuzione per identificazione biomarker
-python main_biomarker.py
-```
+## Provenance
 
-### MPK-GNN
-```bash
-# Installazione dipendenze
-pip install -r requirements.txt
+Both baselines were vendored as source snapshots rather than as git submodules,
+so the upstream commit hashes are not recorded in this repository. The snapshots
+correspond to the versions available at the time the benchmark was run.
 
-# Prima di eseguire bisogna scompattare data/processed_data/1000_0.1/test_data.zip
+## Methods surveyed but not included
 
-# Esecuzione del modello
-python run_results.py
-```
+The following methods were reviewed during method selection and are cited in the
+Related Work section of the manuscript, but contribute to no reported result.
+Their implementations are not vendored here; refer to the original repositories.
 
-### Multimodal-GNN-for-Cancer-Subtype-Clasification
-```bash
-# Installazione environment conda
-conda env create -f environment.yml
-conda activate [nome_environment]
+| Method | Approach |
+| --- | --- |
+| MOGONET | Per-omic patient–patient graphs from cosine similarity, fused downstream by VCDN |
+| MOGAT | As MOGONET, with GAT attention weighting; no explicit biological edges |
+| SUPREME | One patient similarity network per omic, GCN on each, combined with raw features |
+| AMOGEL | Graph derived by association rule mining, enriched with biological priors as auxiliary edges |
+| MPK-GNN | Per-graph GNN encoders plus an MLP on raw omics, trained with a contrastive objective |
 
-# Esecuzione con parametri test per dataset BRCA
-python cancer_test.py --model gat --num_gene 100 --cancer_subtype True --omic_mode 4 --shuffle_index 0 --gene_gene True --mirna_gene True --mirna_mirna True --parallel True --l2 True --decoder False --poolsize 8 --edge_weight True --epochs 200 --train_ratio 0.7 --test_ratio 0.1
-```
-
-### SUPREME
-```bash
-# Installazione environment conda
-conda env create -f environment.yml
-conda activate [nome_environment]
-
-# Esecuzione con dati di esempio
-python SUPREME.py
-
-# Esecuzione con dati personalizzati
-python SUPREME.py -data user_defined_data
-```
-
-
-
+The reported comparison is restricted to methods that, like MOGNN-TF, build the
+graph from biological prior knowledge over molecular entities rather than from
+patient similarity — which makes Li24 and MoGCN the meaningful points of
+reference.
